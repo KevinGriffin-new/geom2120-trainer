@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GEOM 2120 · Survey Computations Trainer</title>
+<style>
+  :root{
+    --bg:#0e1220; --panel:#171c2e; --panel2:#1f2740; --ink:#e8ecf7; --mut:#93a0c0;
+    --line:#2a3350; --acc:#4ad1a4; --acc2:#5b9cff; --warn:#ffb454; --bad:#ff6b81;
+    --good:#3ddc97; --gold:#ffd166; --m3:#4ad1a4; --m4:#5b9cff; --m5:#c08bff; --m6:#ff9e7d;
+    --r:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 70% -10%,rgba(91,156,255,.10) 0,transparent 60%),var(--bg);
+    color:var(--ink); -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:18px 16px 60px}
+  h1{font-size:20px;margin:0;letter-spacing:.2px}
+  h1 small{display:block;font-size:12px;color:var(--mut);font-weight:500;letter-spacing:.4px;margin-top:2px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+  .hud{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:12px;color:var(--mut);white-space:nowrap}
+  .chip b{color:var(--ink)} .chip .lv{color:var(--gold)}
+  .hearts{letter-spacing:2px;font-size:13px}
+  .xpwrap{height:8px;background:var(--panel2);border-radius:999px;overflow:hidden;margin:2px 0 16px;border:1px solid var(--line)}
+  .xpbar{height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+  .muted{color:var(--mut)}
+  .pill{display:inline-block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--bg);background:var(--acc);padding:3px 9px;border-radius:999px;font-weight:700}
+  .pill.q{background:var(--acc2)} .pill.s{background:var(--warn)} .pill.n{background:var(--gold)}
+  .qtext{font-size:17px;margin:14px 0 4px;font-weight:600}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--panel2);color:var(--ink);
+       padding:13px 15px;border-radius:11px;font-size:15px;cursor:pointer;text-align:left;width:100%;
+       transition:transform .06s ease,border-color .15s,background .15s}
+  .btn:hover{border-color:#3b466e}
+  .btn:active{transform:translateY(1px)}
+  .opts{display:grid;gap:10px;margin-top:6px}
+  .btn.correct{border-color:var(--good);background:rgba(61,220,151,.13)}
+  .btn.wrong{border-color:var(--bad);background:rgba(255,107,129,.12)}
+  .btn:disabled{cursor:default;opacity:.85}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .num{display:flex;gap:10px;margin-top:6px}
+  input[type=text]{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+       padding:13px 14px;border-radius:11px;font-size:16px;font-variant-numeric:tabular-nums}
+  input[type=text]:focus{outline:none;border-color:var(--acc2)}
+  .ghost{font-size:12px;color:var(--mut);margin-top:7px}
+  .primary{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#04231b;border:none;font-weight:700;width:auto;padding:13px 22px}
+  .seqpool,.seqans{display:grid;gap:8px;margin-top:8px}
+  .seqans{min-height:8px}
+  .seqitem{cursor:pointer;user-select:none}
+  .seqslot{border:1px dashed var(--line);border-radius:11px;padding:11px 13px;background:rgba(255,255,255,.02);display:flex;gap:10px;align-items:center}
+  .seqslot .ix{width:22px;height:22px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-size:12px;color:var(--mut);flex:none}
+  .fb{margin-top:16px;padding:13px 15px;border-radius:11px;font-size:14px;display:none}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(61,220,151,.12);border:1px solid var(--good)}
+  .fb.no{background:rgba(255,107,129,.1);border:1px solid var(--bad)}
+  .fb b{color:var(--ink)}
+  .fb .formula{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--bg);padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px}
+  .combo{font-size:13px;color:var(--gold);font-weight:700;opacity:0;transition:opacity .2s}
+  .combo.show{opacity:1}
+  .modegrid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+  .mode{display:flex;gap:14px;align-items:flex-start;padding:16px;cursor:pointer;border-left:3px solid transparent}
+  .mode:hover{border-color:var(--line)}
+  .mode .emo{font-size:26px;line-height:1}
+  .mode h3{margin:0 0 3px;font-size:16px}
+  .mode p{margin:0;color:var(--mut);font-size:13px}
+  .mode .tag{font-size:11px;color:var(--mut)}
+  .m3b{border-left-color:var(--m3)} .m4b{border-left-color:var(--m4)} .m5b{border-left-color:var(--m5)} .m6b{border-left-color:var(--m6)} .allb{border-left-color:var(--gold)}
+  .center{text-align:center}
+  .big{font-size:40px;margin:6px 0}
+  .tag{font-size:12px;color:var(--mut)}
+  table.mini{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+  table.mini th,table.mini td{border:1px solid var(--line);padding:5px 7px;text-align:left}
+  table.mini th{background:var(--panel2);color:var(--mut);font-weight:600}
+  a.link{color:var(--acc2);text-decoration:none;cursor:pointer}
+  .lesson-tbl{overflow-x:auto;animation:fade .45s ease}
+  @keyframes fade{from{opacity:.15;transform:translateY(4px)}to{opacity:1;transform:none}}
+  table.mini td.hl,table.mini th.hl{background:rgba(74,209,164,.22);color:var(--ink);font-weight:700;transition:background .3s}
+  .dots{display:flex;gap:6px;justify-content:center;margin:2px 0 14px;flex-wrap:wrap}
+  .dots i{width:8px;height:8px;border-radius:50%;background:var(--panel2);border:1px solid var(--line)}
+  .dots i.on{background:var(--acc);border-color:var(--acc)}
+  .dots i.done{background:var(--line)}
+  .lead{font-size:15px;color:var(--ink);margin:6px 0 4px}
+  .kfoot{margin-top:13px;padding:12px 14px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);font-size:14px;color:var(--ink)}
+  .lesson-head{font-size:18px;font-weight:700;margin:6px 0 2px}
+  .fab{position:fixed;right:16px;bottom:16px;z-index:40;background:linear-gradient(90deg,var(--acc),var(--acc2));
+       color:#04231b;border:none;font-weight:700;padding:11px 16px;border-radius:999px;box-shadow:var(--shadow);cursor:pointer;font-size:14px}
+  .modal{position:fixed;inset:0;background:rgba(4,7,16,.74);z-index:60;display:none;align-items:flex-start;justify-content:center;padding:22px 12px;overflow:auto}
+  .modal.show{display:flex}
+  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:660px;width:100%;padding:18px;box-shadow:var(--shadow)}
+  .sheet h3{margin:2px 0 10px}
+  .sheet .x{float:right;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:5px 11px;cursor:pointer;font-size:13px}
+  .figsvg{width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px;margin-top:2px}
+  #figInline{margin:8px 0 14px}
+  #figInline .figsvg{width:auto;max-width:100%;max-height:290px;display:block;margin:0 auto}
+  .toast{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-80px);
+    background:var(--gold);color:#3a2c00;font-weight:700;padding:10px 18px;border-radius:999px;
+    box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,1.3,.4,1);z-index:50}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .scoreline{display:flex;justify-content:space-around;margin:18px 0;text-align:center}
+  .scoreline div span{display:block;font-size:26px;font-weight:700}
+  .scoreline div small{color:var(--mut)}
+  .crumb{font-size:12px;color:var(--mut);margin-bottom:10px}
+  .crumb a{color:var(--acc2);cursor:pointer;text-decoration:none}
+  ol.proc{line-height:1.85;padding-left:20px;margin:6px 0 0}
+  ol.proc li{padding-left:4px}
+  h4.proc{margin:14px 0 2px;font-size:14px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<button class="fab" onclick="openFig()">🗺 SW9 figure</button>
+<div class="modal" id="figModal" onclick="closeFig(event)">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <button class="x" onclick="closeFig()">✕ Close</button>
+    <h3>SW9 Building — Closed Loop Traverse</h3>
+    <svg class="figsvg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg"
+         font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+      <!-- north arrow -->
+      <line x1="44" y1="80" x2="44" y2="46" stroke="var(--mut)" stroke-width="2"/>
+      <path d="M44,42 L39,53 L49,53 Z" fill="var(--mut)"/>
+      <text x="44" y="96" fill="var(--mut)" font-size="13.5" text-anchor="middle">N</text>
+      <!-- loop outline -->
+      <path d="M284,329 L492,329 L499,85 L187,50 L70,184 Z" fill="rgba(91,156,255,.07)"
+            stroke="var(--acc2)" stroke-width="2.5" stroke-linejoin="round"/>
+      <!-- leg distances -->
+      <text x="388" y="349" fill="var(--ink)" font-size="14" text-anchor="middle">83.099 m</text>
+      <text x="516" y="212" fill="var(--ink)" font-size="14" text-anchor="start">97.471 m</text>
+      <text x="343" y="50"  fill="var(--ink)" font-size="14" text-anchor="middle">125.405 m</text>
+      <text x="104" y="104" fill="var(--ink)" font-size="14" text-anchor="end">71.333 m</text>
+      <text x="150" y="276" fill="var(--ink)" font-size="14" text-anchor="end">103.421 m</text>
+      <!-- start bearing -->
+      <text x="388" y="320" fill="var(--acc)" font-size="12.5" text-anchor="middle">WCB 90°00′00″ →</text>
+      <!-- station dots -->
+      <circle cx="492" cy="329" r="5.5" fill="var(--acc2)"/>
+      <circle cx="499" cy="85"  r="5.5" fill="var(--acc2)"/>
+      <circle cx="187" cy="50"  r="5.5" fill="var(--acc2)"/>
+      <circle cx="70"  cy="184" r="5.5" fill="var(--acc2)"/>
+      <circle cx="284" cy="329" r="6.5" fill="var(--gold)" stroke="var(--bg)" stroke-width="1.5"/>
+      <!-- station names -->
+      <text x="276" y="325" fill="var(--ink)" font-size="15" font-weight="700" text-anchor="end">LP14</text>
+      <text x="276" y="342" fill="var(--mut)" font-size="11.5" text-anchor="end">start / close</text>
+      <text x="505" y="333" fill="var(--ink)" font-size="15" font-weight="700" text-anchor="start">Hub 1</text>
+      <text x="509" y="88"  fill="var(--ink)" font-size="15" font-weight="700" text-anchor="start">Hub 2</text>
+      <text x="187" y="36"  fill="var(--ink)" font-size="15" font-weight="700" text-anchor="middle">Hub 3</text>
+      <text x="58"  y="186" fill="var(--ink)" font-size="15" font-weight="700" text-anchor="end">Hub 4</text>
+    </svg>
+    <p class="sub" style="margin-top:10px">Start &amp; close at <b>LP14</b> = 1095.166 E, 4789.769 N · first bearing
+      LP14→Hub 1 = 90°00′00″ · walk LP14 → Hub 1 → Hub 2 → Hub 3 → Hub 4 → back to LP14.</p>
+    <div id="figTables"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="topbar">
+    <h1>Survey Computations Trainer <small>GEOM 2120 · Modules 3–5 · final-exam practice</small></h1>
+    <div class="hud">
+      <span class="chip">Lvl <b class="lv" id="hudLvl">1</b></span>
+      <span class="chip">Score <b id="hudScore">0</b></span>
+      <span class="chip">Streak <b id="hudStreak">0</b>🔥</span>
+      <span class="chip"><span class="hearts" id="hudHearts">❤️❤️❤️</span></span>
+    </div>
+  </div>
+  <div class="xpwrap"><div class="xpbar" id="xpbar"></div></div>
+  <div id="screen"></div>
+</div>
+
+<script>
+/* ===========================================================================
+   GEOM 2120 — Survey Computations Trainer (Modules 3, 4, 5)
+   Content grounded in the L3A/L3B, L4A/L4B, L5A/L5B lecture worked examples.
+   =========================================================================== */
+
+/* ---------- angle helpers ---------- */
+function dmsToDeg(d,m,s){const sign=d<0?-1:1;return sign*(Math.abs(d)+(m||0)/60+(s||0)/3600);}
+const A=(d,m,s)=>dmsToDeg(d,m,s);                 // shorthand for answer keys
+function parseDMS(str){
+  const cleaned=String(str).replace(/[°'"’”]/g,' ').trim();
+  if(cleaned==='')return null;
+  const p=cleaned.split(/\s+/).map(Number);
+  if(p.some(isNaN))return null;
+  if(p.length===1)return p[0];                    // decimal degrees / plain number
+  const sign=p[0]<0?-1:1;
+  return sign*(Math.abs(p[0])+(p[1]||0)/60+(p[2]||0)/3600);
+}
+
+/* ===========================================================================
+   MODULE CONTENT
+   Each module: { key,name,emo,blurb,colour, procs[], mcq[], num[], formulae }
+   procs : ordering puzzles      mcq : concept multiple-choice
+   num   : numeric generators    formulae : cheat-sheet html
+   =========================================================================== */
+
+const M3={
+ key:'m3', name:'Module 3 — Closed Traverse', emo:'📐', cls:'m3b', colour:'var(--m3)',
+ blurb:'Loop & link traverse closure: angular misclosure → balance → bearings → ΔE/ΔN → positional misclosure → Compass Rule → coordinates.',
+ procs:[
+  {title:'Closed-loop closure worksheet',list:[
+   "Sum the observed interior angles (ΣObs)",
+   "Compute the geometric true sum (n−2)×180°",
+   "Angular misclosure  eβ = ΣObs − ΣTrue",
+   "Angular adjustment per angle = −eβ ⁄ n",
+   "Balance the angles (apply adjustment to each)",
+   "Compute forward bearings from the balanced angles",
+   "ΔE = s·sin(brg) and ΔN = s·cos(brg) for each leg",
+   "Sum departures & latitudes (ΣΔE, ΣΔN)",
+   "Positional misclosure (eE, eN)",
+   "Compass-Rule factors −eE⁄Σs and −eN⁄Σs",
+   "Apply proportional adjustment to each ΔE, ΔN",
+   "Relative error  er = √(eE²+eN²) and RP = 1:(Σs⁄er)"]},
+  {title:'Link traverse (extra steps up front)',list:[
+   "Inverse the initial baseline → initial bearing ai",
+   "Inverse the final baseline → final bearing af",
+   "Angular misclosure  eβ = Σβ − n·180° − (af − ai)",
+   "Balance the angles, then compute forward bearings",
+   "ΔE, ΔN per leg, then ΣΔE, ΣΔN",
+   "eE = ΣΔE − (En−Ei),  eN = ΣΔN − (Nn−Ni)",
+   "Compass-Rule adjust between the fixed points"]},
+ ],
+ mcq:[
+  {q:"For a closed LOOP traverse, the geometric true sum of the interior angles is…",
+   opts:["(n − 2) × 180°","(n + 2) × 180°","n × 180°","360° always"],a:0,
+   why:"Interior angles of any polygon sum to (n − 2) × 180°."},
+  {q:"Just after summing the observed angles, what comes next?",
+   opts:["Angular misclosure eβ","The departures ΔE","Relative precision","The Compass factor"],a:0,
+   why:"eβ = ΣObs − ΣTrue — you need the misclosure before anything can be balanced."},
+  {q:"In a loop traverse the adjustment applied to each equal-weight angle is…",
+   opts:["−eβ ⁄ n (split equally)","−eβ on the largest angle","eβ × distance","never applied"],a:0,
+   why:"Equal-weight observations share the misclosure equally: −eβ ⁄ n per angle."},
+  {q:"When are the forward bearings computed?",
+   opts:["AFTER balancing the angles","BEFORE balancing","at the same time as ΣObs","after coordinates"],a:0,
+   why:"Balanced angles are carried through so the final bearing closes exactly."},
+  {q:"Which formula gives the departure ΔE of a leg?",
+   opts:["ΔE = s · sin(bearing)","ΔE = s · cos(bearing)","ΔE = s ⁄ sin(bearing)","ΔE = bearing ⁄ s"],a:0,
+   why:"Departure (easting change) = s·sin(brg); latitude ΔN = s·cos(brg)."},
+  {q:"For a LOOP traverse, the easting misclosure eE equals…",
+   opts:["ΣΔE  (start = end, so En−Ei = 0)","ΣΔE − 360°","Σs ⁄ ΣΔE","a large non-zero number"],a:0,
+   why:"A loop returns to the same point, so eE = ΣΔE and eN = ΣΔN."},
+  {q:"The Compass (Bowditch) Rule distributes the positional misclosure in proportion to…",
+   opts:["each leg's distance","each leg's bearing","the number of angles","the largest ΔN"],a:0,
+   why:"Leg adjustment = (−e ⁄ Σs) × s_leg — longer legs absorb more error."},
+  {q:"Relative precision RP is expressed as…",
+   opts:["1 : (Σs ⁄ er)","1 : (er ⁄ Σs)","er : Σs","Σs : eE"],a:0,
+   why:"RP = 1 : (total length ⁄ linear error); bigger denominator = better."},
+  {q:"A LINK traverse angular misclosure also subtracts…",
+   opts:["(af − ai), final minus initial bearing","the largest angle","360°","Σs"],a:0,
+   why:"Link: eβ = Σβ − n·180° − (af − ai); ai, af come from inversing the baselines."},
+  {q:"An open traverse cannot be adjusted because…",
+   opts:["there is no geometric check","it has too many angles","bearings are unknown","distances aren't measured"],a:0,
+   why:"Only closed (loop/link) traverses give a check to compute a misclosure."},
+ ],
+ num:[ /* verified SW9 loop traverse (L3A) */
+  ()=>({q:"A loop has n = 5 stations. ΣTrue, the geometric true angle sum? (degrees)",
+        ans:540,tol:0.001,unit:'°',why:'(n−2)×180° = (5−2)×180° = <span class="formula">540°</span>.'}),
+  ()=>({q:"ΣObs = 539°59’30” and ΣTrue = 540°. Angular misclosure eβ? (seconds)",
+        ans:-30,tol:1,unit:'″',why:'eβ = ΣObs − ΣTrue = −30″.'}),
+  ()=>({q:"eβ = −30″ over 5 equal angles. Adjustment per angle? (seconds, signed)",
+        ans:6,tol:0.5,unit:'″',why:'−eβ⁄n = −(−30)⁄5 = <span class="formula">+6″</span> per angle.'}),
+  ()=>({q:"Leg LP14→Hub1: s = 83.099 m, bearing 90°00’00”. Compute ΔE (3 dp).",
+        ans:83.099,tol:0.002,unit:'m',why:'ΔE = s·sin(90°) = <span class="formula">83.099 m</span>.'}),
+  ()=>({q:"Leg Hub1→Hub2: s = 97.471 m, bearing 1°35’38”. Compute ΔN (3 dp).",
+        ans:97.433,tol:0.01,unit:'m',why:'ΔN = s·cos(1°35’38”) ≈ <span class="formula">97.433 m</span>.'}),
+  ()=>({q:"Loop with ΣΔE = +0.019 m. The easting misclosure eE? (3 dp, signed)",
+        ans:0.019,tol:0.001,unit:'m',why:'Loop ⇒ eE = ΣΔE = <span class="formula">+0.019 m</span>.'}),
+  ()=>({q:"eE = +0.019, eN = −0.023. Relative (linear) error er? (3 dp)",
+        ans:0.030,tol:0.0015,unit:'m',why:'er = √(0.019²+0.023²) = <span class="formula">0.030 m</span>.'}),
+  ()=>({q:"er = 0.030 m, Σs = 480.729 m. Relative precision is 1 : ? (nearest 1000)",
+        ans:16000,tol:600,unit:'',why:'RP = 1:(480.729⁄0.030) = 1:16,024 ≈ <span class="formula">1:16,000</span>.'}),
+ ],
+ formulae:`ΣTrue = (n−2)×180°  ·  eβ = ΣObs − ΣTrue  ·  adj = −eβ⁄n<br>
+   ΔE = s·sin(brg)  ·  ΔN = s·cos(brg)<br>
+   Loop: eE = ΣΔE, eN = ΣΔN  ·  Link: eE = ΣΔE−(En−Ei)<br>
+   factor = −e⁄Σs  ·  er = √(eE²+eN²)  ·  RP = 1:(Σs⁄er)`
+};
+
+const M4={
+ key:'m4', name:'Module 4 — Alt Traverse & Blunders', emo:'🔎', cls:'m4b', colour:'var(--m4)',
+ blurb:'Alternate closed traverses (known baseline, swing-angle between two points) and locating a single gross error in an angle or a distance.',
+ procs:[
+  {title:'Traverse between 2 known points (swing angle)',list:[
+   "Assume a starting bearing for the first leg",
+   "Compute forward bearings & ΔE/ΔN for all legs (open traverse)",
+   "Sum ΔE/ΔN → assumed bearing & distance start→end",
+   "Inverse the known coordinates → TRUE start→end bearing",
+   "Swing angle = assumed bearing − true bearing",
+   "Rotate ALL bearings by the swing angle (angles unchanged)",
+   "Recompute ΔE/ΔN and the positional misclosure",
+   "Compass-Rule adjust to the fixed baseline → coordinates"]},
+  {title:'Locating a single ANGULAR blunder',list:[
+   "Re-check the angular misclosure calculation",
+   "Forward: unadjusted angles → bearings → coords (open) to apparent end",
+   "Reverse: (360°−each angle) from the reversed final bearing back to start",
+   "Compare the two coordinate sets station by station",
+   "The station whose coords MATCH in both sets holds the bad angle",
+   "Re-measure that one angle only"]},
+  {title:'Locating a single DISTANCE blunder',list:[
+   "Confirm angular misclosure is acceptable; balance the angles",
+   "Re-check the ΔE/ΔN values and positional misclosure",
+   "Bearing of the relative error  a = tan⁻¹(eE ⁄ eN)",
+   "Length of the relative error  er = √(eE²+eN²)",
+   "Find the leg whose bearing ≈ that bearing (or ±180°)",
+   "Re-measure that distance — the blunder ≈ er"]},
+ ],
+ mcq:[
+  {q:"For a closed traverse between two DIFFERENT known end points, eE equals…",
+   opts:["ΣΔE − (En − Ei)","ΣΔE (always)","Σs ⁄ ΣΔE","En − Ei"],a:0,
+   why:"Only a loop gives eE = ΣΔE. Between two points eE = ΣΔE − (En − Ei)."},
+  {q:"Two known points are not intervisible and have no reference direction. You start by…",
+   opts:["assuming a starting bearing","measuring a new baseline","abandoning the traverse","using magnetic north only"],a:0,
+   why:"Assume a bearing, run a preliminary calc, then correct it with the swing angle."},
+  {q:"The swing angle is applied to…",
+   opts:["every computed bearing (angles need no adjustment)","only the first leg","the distances","the coordinates directly"],a:0,
+   why:"It rotates the whole assumed traverse; the measured angles are unchanged."},
+  {q:"After the swing-angle rotation, the traverse is fitted to the fixed baseline using…",
+   opts:["the Compass Rule","a second swing angle","least squares only","no further step"],a:0,
+   why:"A normal Compass-Rule positional adjustment finishes the fit."},
+  {q:"A gross error (blunder) differs from random error because it…",
+   opts:["cannot be distributed — it must be found and re-measured","is always small","cancels out on averaging","only affects angles"],a:0,
+   why:"Blunders are large and observer-related; distributing them ruins the traverse."},
+  {q:"To locate a single ANGULAR blunder you compute the traverse…",
+   opts:["forward AND reverse, then compare coordinates","forward only","twice with the same angles","with adjusted angles first"],a:0,
+   why:"Forward + reverse open-traverse coords are compared station by station."},
+  {q:"In the forward/reverse method, the bad-angle station is the one whose coordinates…",
+   opts:["are nearly the SAME in both sets","differ the most","are exactly zero","are closest to the start"],a:0,
+   why:"The error sits 'downstream' of that station in both directions, so it agrees there."},
+  {q:"Angular misclosure is fine but the positional misclosure is too large. Likely cause?",
+   opts:["a single distance blunder","a single angular blunder","random error only","a math slip in ΣTrue"],a:0,
+   why:"Good angles + bad position ⇒ suspect a distance blunder."},
+  {q:"A distance blunder is pinned down by comparing the bearing of the relative error to…",
+   opts:["the bearing of each traverse leg","the initial bearing only","(n−2)×180°","the swing angle"],a:0,
+   why:"The leg whose bearing ≈ the relative-error bearing (or ±180°) is the suspect."},
+  {q:"When computing a loop that has a fixed known baseline, that closing line is…",
+   opts:["excluded from Σs and the ΔE/ΔN sums","added to Σs","used as the initial bearing only","measured twice"],a:0,
+   why:"The fixed line is not part of the traverse legs being adjusted."},
+ ],
+ num:[ /* L4A known-baseline loop + 2-point swing; L4B distance blunder */
+  ()=>({q:"Known-baseline loop: n = 7 angles, ΣObs = 900°00’35”, ΣTrue = (7−2)×180°. eβ? (seconds)",
+        ans:35,tol:1,unit:'″',why:'ΣTrue = 900°; eβ = ΣObs − ΣTrue = <span class="formula">+35″</span>.'}),
+  ()=>({q:"eβ = +35″ over 7 angles. Correction per angle? (seconds, signed)",
+        ans:-5,tol:0.5,unit:'″',why:'−eβ⁄n = −35⁄7 = <span class="formula">−5″</span> per angle.'}),
+  ()=>({q:"ΣΔE = +25.396, En = 2785.275, Ei = 2759.895. eE = ΣΔE−(En−Ei)? (3 dp)",
+        ans:0.016,tol:0.002,unit:'m',why:'En−Ei = 25.380; eE = 25.396−25.380 = <span class="formula">+0.016 m</span>.'}),
+  ()=>({q:"ΣΔN = +60.311, Nn = 9899.684, Ni = 9839.341. eN = ΣΔN−(Nn−Ni)? (3 dp)",
+        ans:-0.032,tol:0.002,unit:'m',why:'Nn−Ni = 60.343; eN = 60.311−60.343 = <span class="formula">−0.032 m</span>.'}),
+  ()=>({q:"eE = +0.016, eN = −0.032. Relative error er? (3 dp)",
+        ans:0.036,tol:0.002,unit:'m',why:'√(0.016²+0.032²) = <span class="formula">0.036 m</span>.'}),
+  ()=>({q:"Joining 2 points: assumed brg 50→51A = 115°16’20”, true brg 50→51 = 104°05’54”. Swing angle? (d m s)",
+        ans:A(11,10,26),tol:A(0,0,40),unit:'',disp:'11°10’26”',
+        why:'Swing = assumed − true = <span class="formula">11°10’26”</span>, applied to every bearing.'}),
+  ()=>({q:"Distance-blunder hunt: eE = −9.280 m, eN = +3.732 m. Length of the relative error er? (3 dp)",
+        ans:10.002,tol:0.02,unit:'m',why:'er = √(9.280²+3.732²) = <span class="formula">10.002 m</span> ≈ the blunder size.'}),
+ ],
+ formulae:`Between 2 points: eE = ΣΔE−(En−Ei),  eN = ΣΔN−(Nn−Ni)<br>
+   Swing angle = assumed bearing − true bearing  (angles unchanged)<br>
+   Blunder: large, can't be distributed — locate & re-observe<br>
+   Angular blunder → forward+reverse coords, matching station = culprit<br>
+   Distance blunder → leg bearing ≈ tan⁻¹(eE⁄eN); blunder ≈ √(eE²+eN²)`
+};
+
+const M5={
+ key:'m5', name:'Module 5 — Missing Parts & Resection', emo:'🧩', cls:'m5b', colour:'var(--m5)',
+ blurb:'Solving unknown bearings/distances in a closed figure (departures & latitudes sum to zero) and fixing an unknown point by three-point resection.',
+ procs:[
+  {title:'Missing bearing & distance of one line',list:[
+   "Confirm all bearings are consistent (all forward / clockwise)",
+   "Compute ΔE, ΔN for every KNOWN leg",
+   "Sum them → ΣΔE, ΣΔN of the known legs",
+   "Missing ΔE = −ΣΔE and missing ΔN = −ΣΔN (closure to zero)",
+   "Missing bearing  a = tan⁻¹(ΔE ⁄ ΔN), placed in the right quadrant",
+   "Missing distance  s = √(ΔE² + ΔN²)"]},
+  {title:'Two missing bearings (Shifting Line Method)',list:[
+   "Assume coordinates (0,0) at a chosen start point",
+   "Run an open traverse over the legs with known bearing+distance",
+   "Sum ΔE/ΔN → bearing & distance of the line joining start→end",
+   "Swing arcs of the two known leg lengths → intersection point",
+   "Solve the triangle angles by the cosine law",
+   "Combine with the reverse bearing → the two missing bearings"]},
+  {title:'Three-point resection (fix the occupied point P)',list:[
+   "Inverse known coords → lengths a, c; angle B from the bearings",
+   "(A + C) = 360° − (X + Y + B)",
+   "Solve constant k, then angles A and C",
+   "B1 = 180° − (X + A),  B2 = 180° − (Y + C)",
+   "Sine law → lengths AP and CP",
+   "Coordinates of P from bearing & distance A→P",
+   "Check with bearing & distance C→P"]},
+ ],
+ mcq:[
+  {q:"In a closed figure, the departures (ΣΔE) and latitudes (ΣΔN) must each sum to…",
+   opts:["zero","(n−2)×180°","the total distance Σs","the relative error"],a:0,
+   why:"A closed polygon returns to its start, so ΣΔE = 0 and ΣΔN = 0."},
+  {q:"With only two independent closure equations, how many missing parts can you solve?",
+   opts:["two","one","four","any number"],a:0,
+   why:"ΣΔE=0 and ΣΔN=0 give exactly two equations ⇒ at most two unknowns."},
+  {q:"The missing DISTANCE of a line is found from its ΔE, ΔN by…",
+   opts:["s = √(ΔE² + ΔN²)","s = ΔE + ΔN","s = ΔE ⁄ ΔN","s = tan⁻¹(ΔE⁄ΔN)"],a:0,
+   why:"Distance is the hypotenuse: √(ΔE²+ΔN²). Bearing is tan⁻¹(ΔE⁄ΔN)."},
+  {q:"Because a missing-parts figure is 'not already closed', any errors in the known legs…",
+   opts:["are transferred entirely into the unknown part(s)","are distributed by Compass Rule","cancel automatically","are ignored"],a:0,
+   why:"There is no independent check, so the unknowns absorb all the error."},
+  {q:"Two missing distances have NO solution when the two unknown legs are…",
+   opts:["parallel (ak = an or an+180°)","perpendicular","equal in length","both short"],a:0,
+   why:"Parallel legs make the formula denominators vanish."},
+  {q:"The Shifting Line Method solves two missing ____ via a distance-distance intersection.",
+   opts:["bearings","distances","coordinates","angles only"],a:0,
+   why:"It swings two arcs (known lengths) and intersects them to recover the bearings."},
+  {q:"A three-point resection determines the position of…",
+   opts:["the unknown occupied point P, from angles to 3 known points","a fourth control point","the bearing of a baseline","the area of a parcel"],a:0,
+   why:"You occupy unknown P and observe angles X, Y to three known points."},
+  {q:"In resection, (A + C) = ?",
+   opts:["360° − (X + Y + B)","180° − (X + Y)","X + Y + B","(n−2)×180°"],a:0,
+   why:"The angles around the figure give (A+C) = 360° − (X + Y + B)."},
+  {q:"A resection has NO unique solution when A, B, C and P…",
+   opts:["all lie on one circle, i.e. (A+C) = 180°","form a straight line","are equally spaced","are very close together"],a:0,
+   why:"On a common circle the geometry is indeterminate — the danger circle."},
+  {q:"Resection accuracy is poor when the observed angles X and Y are…",
+   opts:["small (they should be > 30°)","exactly 90°","greater than 120°","equal to each other"],a:0,
+   why:"Small X, Y exaggerate observational errors; keep them above ~30°."},
+  {q:"The resection result is CHECKED by…",
+   opts:["recomputing P via the bearing & distance from the third point (C→P)","measuring a fourth angle","re-levelling the instrument","assuming it is correct"],a:0,
+   why:"Coordinates from A→P and from C→P should agree — that is the check."},
+ ],
+ num:[ /* L5A missing parts + L5B resection worked examples */
+  ()=>({q:"Closed figure: the KNOWN legs sum to ΣΔE = +189.231 m. The missing leg's ΔE must be? (3 dp, signed)",
+        ans:-189.231,tol:0.001,unit:'m',why:'ΣΔE must = 0 ⇒ missing ΔE = <span class="formula">−189.231 m</span> (and missing ΔN = −ΣΔN).'}),
+  ()=>({q:"A missing leg has ΔE = −189.231, ΔN = −78.789. Missing distance s = √(ΔE²+ΔN²)? (2 dp)",
+        ans:204.98,tol:0.2,unit:'m',why:'√(189.231²+78.789²) = <span class="formula">204.98 m</span>.'}),
+  ()=>({q:"Resection: X = 46°41’30”, Y = 49°47’42”, angle B = 99°00’02”. (A+C) = 360°−(X+Y+B)? (d m s)",
+        ans:A(164,30,46),tol:A(0,0,45),unit:'',disp:'164°30’46”',
+        why:'X+Y+B = 195°29’14”; 360°−that = <span class="formula">164°30’46”</span>.'}),
+  ()=>({q:"Resection: A = 83°59’21”, X = 46°41’30”. B1 = 180°−(X+A)? (d m s)",
+        ans:A(49,19,9),tol:A(0,0,45),unit:'',disp:'49°19’09”',
+        why:'X+A = 130°40’51”; 180°−that = <span class="formula">49°19’09”</span>.'}),
+  ()=>({q:"Resection: C = 80°31’25”, Y = 49°47’42”. B2 = 180°−(Y+C)? (d m s)",
+        ans:A(49,40,53),tol:A(0,0,45),unit:'',disp:'49°40’53”',
+        why:'Y+C = 130°19’07”; 180°−that = <span class="formula">49°40’53”</span>.'}),
+ ],
+ formulae:`Closed figure: ΣΔE = 0 and ΣΔN = 0  (≤ 2 unknowns)<br>
+   Missing bearing a = tan⁻¹(ΔE⁄ΔN)  ·  Missing distance s = √(ΔE²+ΔN²)<br>
+   Two missing bearings → Shifting Line (distance-distance intersection)<br>
+   Resection: (A+C)=360°−(X+Y+B)  ·  B1=180°−(X+A), B2=180°−(Y+C)<br>
+   Danger circle when (A+C)=180°  ·  keep X,Y > 30°  ·  check via C→P`
+};
+
+const M6={
+ key:'m6', name:'Module 6 — Trig Levelling', emo:'📏', cls:'m6b', colour:'var(--m6)',
+ blurb:'Heights from zenith angles & slope distances: ΔH = Hi + SD·cos(ZA) − Ht. Reciprocal sights, loop elevation closure, and curvature/refraction on long lines.',
+ procs:[
+  {title:'Short-line elevation (one line)',list:[
+   'Read the field data: Hi, SD, ZA, Ht and the known Elev of A',
+   'Vertical component = SD · cos(ZA)',
+   'ΔH = Hi + SD·cos(ZA) − Ht',
+   'Elev of B = Elev of A + ΔH']},
+  {title:'Reciprocal observation (Hi = Ht)',list:[
+   'Mean zenith angle = (ZA_AB + 180° − ZA_BA) ⁄ 2',
+   'Mean slope distance = (SD_AB + SD_BA) ⁄ 2',
+   'Elev of B = Elev of A + SD_mean · cos(ZA_mean)']},
+  {title:'Loop elevation closure',list:[
+   'ΔH for each leg (Hi + SD·cos ZA − Ht)',
+   'ΣΔH — should be 0 round a loop → misclosure',
+   'Σ horizontal distance (ΣHD)',
+   'Adjustment per leg = −(ΣΔH ⁄ ΣHD) × HD',
+   'Add adjusted ΔH leg by leg → elevations',
+   'Check you return to the start elevation']},
+  {title:'Long line — curvature & refraction',list:[
+   'Long line? (sight over ~300 m → correction matters)',
+   '(c−r) = 0.0675 × D²   (D in kilometres)',
+   'ΔH = Hi + SD·cos(ZA) − Ht + (c−r)',
+   'Elev of B = Elev of A + ΔH']},
+ ],
+ mcq:[
+  {q:"Trigonometric levelling finds the difference in elevation from…",
+   opts:["measured zenith angles and slope distances","a spirit level only","air pressure","GPS height only"],a:0,
+   why:"It uses the observed zenith angle and slope distance to compute ΔH."},
+  {q:"In ΔH = Hi + SD·cos(ZA) − Ht, the angle ZA is measured from…",
+   opts:["the vertical (straight up = 0°)","the horizontal","magnetic north","the slope itself"],a:0,
+   why:"ZA is the ZENITH angle, measured down from the vertical — hence the cosine."},
+  {q:"A zenith angle GREATER than 90° means the line of sight is…",
+   opts:["going downhill (cos is negative)","going uphill","exactly level","invalid"],a:0,
+   why:"Past 90° the cosine turns negative, so SD·cos(ZA) lowers the elevation."},
+  {q:"Short-line trig levelling treats the earth as flat — valid up to about…",
+   opts:["300 m","30 m","3 km","30 km"],a:0,
+   why:"Beyond ~300 m, curvature and refraction become significant."},
+  {q:"Over long lines you must correct for…",
+   opts:["earth curvature and atmospheric refraction","magnetic declination","tape temperature","instrument weight"],a:0,
+   why:"Both are systematic and predictable, so they can be corrected."},
+  {q:"The combined curvature-and-refraction correction (c−r) is…",
+   opts:["always ADDED, ≈ 0.0675·D² (D in km)","always subtracted","ignored under 5 km","equal to the slope distance"],a:0,
+   why:"(c−r) ≈ 0.0675·D²km and is added to ΔH, uphill or downhill."},
+  {q:"Simultaneous reciprocal observations from both ends of a line…",
+   opts:["cancel curvature and minimise refraction","double the error","need no instrument","only work downhill"],a:0,
+   why:"Observing both ends together largely removes the systematic curvature/refraction effect."},
+  {q:"Around a closed levelling loop, the sum of the height differences ΣΔH should equal…",
+   opts:["zero","(n−2)×180°","the total distance","the start elevation"],a:0,
+   why:"You return to the start, so the ΔH values must net to zero; any leftover is the misclosure."},
+ ],
+ num:[
+  ()=>({q:"SD = 95.374 m, ZA = 85°24′28″. Vertical component SD·cos(ZA)? (3 dp m)",
+        ans:95.374*Math.cos(dmsToDeg(85,24,28)*Math.PI/180),tol:0.01,unit:'m',
+        why:'95.374 × cos(85°24′28″) ≈ <span class="formula">+7.636 m</span>.'}),
+  ()=>({q:"Reciprocal sights: ZA_AB = 85°24′12″, ZA_BA = 94°35′16″. Mean ZA = (ZA_AB + 180° − ZA_BA)⁄2? (d m s)",
+        ans:dmsToDeg(85,24,28),tol:5/3600,unit:'',disp:'85°24′28″',
+        why:'(85°24′12″ + 180° − 94°35′16″) ⁄ 2 = <span class="formula">85°24′28″</span>.'}),
+  ()=>({q:"Mean slope distance = (95.372 + 95.376) ⁄ 2? (3 dp m)",
+        ans:95.374,tol:0.002,unit:'m',why:'Plain average = <span class="formula">95.374 m</span>.'}),
+  ()=>({q:"Elev_A = 218.617 m, SD_mean = 95.374 m, ZA_mean = 85°24′28″ (Hi = Ht). Elev_B = Elev_A + SD·cos(ZA)? (3 dp)",
+        ans:218.617+95.374*Math.cos(dmsToDeg(85,24,28)*Math.PI/180),tol:0.02,unit:'m',
+        why:'218.617 + 95.374·cos(85°24′28″) = <span class="formula">226.253 m</span>.'}),
+  ()=>({q:"Long line, D = 1.000 km. Curvature+refraction (c−r) = 0.0675 × D²? (3 dp m)",
+        ans:0.0675,tol:0.002,unit:'m',why:'0.0675 × 1.000² = <span class="formula">0.068 m</span> (added to ΔH).'}),
+  ()=>({q:"Loop levelling: ΣΔH = −0.012 m (should be 0). The misclosure to distribute? (3 dp, signed)",
+        ans:-0.012,tol:0.001,unit:'m',why:'A loop must close to 0, so the misclosure = <span class="formula">−0.012 m</span>.'}),
+ ],
+ formulae:`ΔH = Hi + SD·cos(ZA) − Ht  ·  Elev_B = Elev_A + ΔH  (ZA = zenith angle)<br>
+   Reciprocal, Hi=Ht: mean ZA = (ZA + 180° − ZA_rev)⁄2, then Elev_B = Elev_A + SD_mean·cos(ZA_mean)<br>
+   Long line: (c−r) = 0.0675·D²(km), always added<br>
+   Loop: ΣΔH should = 0; distribute the misclosure by HD (like compass rule); gradient = ΔElev⁄HD × 100%`
+};
+
+const MODULES={m3:M3,m4:M4,m5:M5,m6:M6};
+
+/* ---------- game state ---------- */
+const S={score:0,streak:0,best:Number(localStorage.gx_best||0),lives:3,xp:0,lvl:1,combo:1};
+const XP_PER_LVL=100;
+const el=id=>document.getElementById(id);
+const screen=el('screen');
+let CUR='all';                    // current module key, or 'all'
+
+function curMods(){return CUR==='all'?[M3,M4,M5]:[MODULES[CUR]];}
+function curName(){return CUR==='all'?'Final Prep · all modules':MODULES[CUR].name;}
+
+function syncHUD(){
+  el('hudLvl').textContent=S.lvl; el('hudScore').textContent=S.score;
+  el('hudStreak').textContent=S.streak;
+  el('hudHearts').textContent='❤️'.repeat(S.lives)+'🖤'.repeat(3-S.lives);
+  el('xpbar').style.width=(100*(S.xp%XP_PER_LVL)/XP_PER_LVL)+'%';
+}
+function toast(m){const t=el('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400);}
+function award(base){const pts=Math.round(base*S.combo);S.score+=pts;S.xp+=base;
+  const nl=1+Math.floor(S.xp/XP_PER_LVL);if(nl>S.lvl){S.lvl=nl;toast('⭐ Level '+S.lvl+'!');}return pts;}
+function rightAnswer(base){S.streak++;if(S.streak>S.best){S.best=S.streak;localStorage.gx_best=S.best;}
+  S.combo=1+Math.min(4,Math.floor(S.streak/3))*0.5;const p=award(base);syncHUD();return p;}
+function wrongAnswer(){S.streak=0;S.combo=1;S.lives--;syncHUD();return S.lives<=0;}
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ===========================================================================
+   NAVIGATION
+   =========================================================================== */
+function home(){
+  S.lives=3;S.combo=1;clearLessonTimer();syncHUD();
+  const cardFor=m=>`<div class="card mode ${m.cls}" onclick="modeMenu('${m.key}')">
+       <div class="emo">${m.emo}</div>
+       <div><h3>${m.name}</h3><p>${m.blurb}</p></div></div>`;
+  screen.innerHTML=`
+   <div class="card">
+     <div class="pill">Pick your ground</div>
+     <p class="qtext" style="margin-top:12px">What do you want to drill?</p>
+     <p class="sub">Each module has the same three game types — learn the order, spot the formula, and work the real numbers from your lecture examples.</p>
+     <div class="modegrid">
+       ${cardFor(M3)}${cardFor(M4)}${cardFor(M5)}${cardFor(M6)}
+       <div class="card mode allb" onclick="modeMenu('all')">
+         <div class="emo">🎓</div>
+         <div><h3>Final Prep — All Modules Mixed</h3>
+         <p>Everything from Modules 3–6 shuffled together. Closest thing to the real exam.</p></div>
+       </div>
+     </div>
+     <div class="footer"><span class="tag">Best streak: <b>${S.best}</b> 🔥</span></div>
+   </div>`;
+}
+
+function modeMenu(key){
+  CUR=key; S.lives=3;S.combo=1;clearLessonTimer();syncHUD();
+  const learnCard=(CUR==='m3'||CUR==='all')?`
+       <div class="card mode m3b" onclick="startLesson()">
+         <div class="emo">📖</div><div><h3>Watch &amp; Learn — start here <span class="tag">(no pressure)</span></h3>
+         <p>See the whole traverse sheet filled in, one step at a time, in plain words. Best first stop if the steps feel fuzzy.</p></div></div>`:'';
+  const drillCards=Object.entries(DRILLS).filter(([k,d])=>CUR==='all'||d.module===CUR)
+    .map(([k,d])=>{const cls=d.module==='m3'?'m3b':d.module==='m6'?'m6b':'m5b';
+      return `<div class="card mode ${cls}" onclick="startDrill('${k}')">
+         <div class="emo">🪜</div><div><h3>Step Drill — ${d.title} <span class="tag">${d.phase}</span></h3>
+         <p>${d.card}</p></div></div>`;}).join('');
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="home()">◂ Modules</a> · ${curName()}</div>
+     <div class="pill">Choose a mode</div>
+     <div class="modegrid">
+       ${learnCard}
+       ${drillCards}
+       <div class="card mode allb" onclick="startCampaign()">
+         <div class="emo">🎯</div><div><h3>Campaign — Mixed Run <span class="tag">(recommended)</span></h3>
+         <p>12 questions blending all three styles. 3 lives. Beat your high score.</p></div></div>
+       <div class="card mode" onclick="run('seq')">
+         <div class="emo">🔢</div><div><h3>Sequence It</h3><p>Put the worksheet steps in the right order — learn <i>what happens when</i>.</p></div></div>
+       <div class="card mode" onclick="run('mc')">
+         <div class="emo">🧠</div><div><h3>Spot the Step</h3><p>Which formula / which calc comes next? Concept recall.</p></div></div>
+       <div class="card mode" onclick="run('num')">
+         <div class="emo">✏️</div><div><h3>Work the Numbers</h3><p>Type the actual values from the worked examples.</p></div></div>
+     </div>
+     <div class="footer"><a class="link" onclick="cheatsheet()">Show the cheat-sheet ▸</a><span></span></div>
+   </div>`;
+}
+
+function cheatsheet(){
+  const mods=curMods();
+  const block=m=>`<h4 class="proc" style="color:${m.colour}">${m.emo} ${m.name}</h4>
+     ${m.procs.map(p=>`<b class="muted" style="font-size:13px">${p.title}</b>
+        <ol class="proc muted">${p.list.map(s=>`<li>${s}</li>`).join('')}</ol>`).join('')}
+     <p class="sub" style="margin-top:8px"><b>Key formulae</b><br>${m.formulae}</p>`;
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="home()">◂ Modules</a> · <a onclick="modeMenu('${CUR}')">${curName()}</a> · Cheat-sheet</div>
+     <div class="pill s">Reference</div>
+     ${mods.map(block).join('<hr style="border:none;border-top:1px solid var(--line);margin:18px 0">')}
+     <div class="footer"><span></span><button class="btn primary" onclick="modeMenu('${CUR}')">Back ▸</button></div>
+   </div>`;
+}
+
+/* ===========================================================================
+   QUESTION GENERATORS  (respect CUR via curMods())
+   =========================================================================== */
+function makeMC(){
+  const bank=[].concat(...curMods().map(m=>m.mcq));
+  const item=pick(bank);
+  return {type:'mc',q:item.q,why:item.why,opts:shuffle(item.opts.map((t,i)=>({t,ok:i===item.a})))};
+}
+function makeNum(){
+  const gens=[].concat(...curMods().map(m=>m.num));
+  const g=pick(gens)(); g.type='num'; return g;
+}
+function makeSeq(){
+  const m=pick(curMods()); const proc=pick(m.procs);
+  let list=proc.list, start=0;
+  if(list.length>6){const win=5+Math.floor(Math.random()*2);start=Math.floor(Math.random()*(list.length-win));list=list.slice(start,start+win);}
+  return {type:'seq',title:proc.title,correct:list.slice(),pool:shuffle(list.map((t,i)=>({t,ord:i})))};
+}
+
+/* ===========================================================================
+   RENDERERS
+   =========================================================================== */
+let Q=null,queue=null,qIndex=0,MODE=null;
+
+function progress(){const p=el('progress');if(p)p.textContent=queue?`Q ${Math.min(qIndex+1,queue.length)} / ${queue.length}`:'practice';}
+
+function renderMC(q){
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="quit()">◂ Quit</a> · ${curName()}</div>
+     <div class="pill q">Spot the Step</div>
+     <div class="qtext">${q.q}</div>
+     <div class="opts" id="opts"></div>
+     <div class="fb" id="fb"></div>
+     <div class="footer"><span class="combo" id="combo"></span><span class="tag" id="progress"></span></div>
+   </div>`;
+  const box=el('opts');
+  q.opts.forEach(o=>{
+    const b=document.createElement('button');b.className='btn';b.textContent=o.t;
+    b.onclick=()=>{
+      [...box.children].forEach(c=>c.disabled=true);const fb=el('fb');
+      if(o.ok){b.classList.add('correct');const p=rightAnswer(10);
+        fb.className='fb show ok';fb.innerHTML=`✅ <b>+${p}</b>. ${q.why}`;showCombo();}
+      else{b.classList.add('wrong');
+        [...box.children].find(c=>c.textContent===q.opts.find(x=>x.ok).t)?.classList.add('correct');
+        fb.className='fb show no';fb.innerHTML=`❌ ${q.why}`;
+        if(wrongAnswer())return gameOver();}
+      next();
+    };
+    box.appendChild(b);
+  });
+  progress();
+}
+
+function renderNum(q){
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="quit()">◂ Quit</a> · ${curName()}</div>
+     <div class="pill n">Work the Numbers</div>
+     <div class="qtext">${q.q}</div>
+     <div class="sub">Type a number${q.unit?` (in ${q.unit})`:''}; angles accept “d m s”. Signs matter.</div>
+     <div class="num"><input id="ans" type="text" autocomplete="off" inputmode="decimal" placeholder="your answer…">
+       <button class="btn primary" id="go">Check</button></div>
+     <div class="ghost">Press Enter to submit.</div>
+     <div class="fb" id="fb"></div>
+     <div class="footer"><span class="combo" id="combo"></span><span class="tag" id="progress"></span></div>
+   </div>`;
+  const inp=el('ans');inp.focus();
+  const submit=()=>{
+    const raw=inp.value.trim();if(raw==='')return;
+    const v=parseDMS(raw);el('go').disabled=true;inp.disabled=true;const fb=el('fb');
+    const ok=v!==null&&Math.abs(v-q.ans)<=q.tol;
+    if(ok){const p=rightAnswer(15);fb.className='fb show ok';fb.innerHTML=`✅ <b>+${p}</b>. ${q.why}`;showCombo();}
+    else{fb.className='fb show no';fb.innerHTML=`❌ Answer: <b>${q.disp||(q.ans+q.unit)}</b>. ${q.why}`;
+      if(wrongAnswer())return gameOver();}
+    next();
+  };
+  el('go').onclick=submit;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+  progress();
+}
+
+function renderSeq(q){
+  const placed=[];
+  const draw=()=>{
+    screen.innerHTML=`
+     <div class="card">
+       <div class="crumb"><a onclick="quit()">◂ Quit</a> · ${curName()}</div>
+       <div class="pill s">Sequence It</div>
+       <div class="qtext">${q.title}</div>
+       <div class="sub">Tap the steps in the order they happen — ${placed.length} of ${q.correct.length} placed.</div>
+       <div class="seqans" id="ans"></div><div style="height:10px"></div>
+       <div class="seqpool" id="pool"></div>
+       <div class="fb" id="fb"></div>
+       <div class="footer"><button class="btn" style="width:auto" onclick="renderSeq(Q)">↺ Reset</button>
+         <span class="tag" id="progress"></span></div>
+     </div>`;
+    const ans=el('ans');
+    placed.forEach((p,i)=>{const d=document.createElement('div');d.className='seqslot';
+      d.innerHTML=`<span class="ix">${i+1}</span><span>${p.t}</span>`;ans.appendChild(d);});
+    const pool=el('pool');
+    q.pool.filter(p=>!placed.includes(p)).forEach(p=>{
+      const b=document.createElement('button');b.className='btn seqitem';b.textContent=p.t;
+      b.onclick=()=>{placed.push(p);placed.length===q.correct.length?grade():draw();};
+      pool.appendChild(b);});
+    progress();
+  };
+  const grade=()=>{
+    const ok=placed.every((p,i)=>p.t===q.correct[i]);const fb=el('fb');
+    el('pool').innerHTML='';const ansEl=el('ans');ansEl.innerHTML='';
+    placed.forEach((p,i)=>{const good=p.t===q.correct[i];const d=document.createElement('div');
+      d.className='seqslot';d.style.borderColor=good?'var(--good)':'var(--bad)';d.style.borderStyle='solid';
+      d.innerHTML=`<span class="ix">${i+1}</span><span>${good?'✅':'❌'} ${p.t}</span>`;ansEl.appendChild(d);});
+    if(ok){const p=rightAnswer(20);fb.className='fb show ok';fb.innerHTML=`✅ Perfect order. <b>+${p}</b>`;}
+    else{fb.className='fb show no';fb.innerHTML='❌ Correct order:<br>'+q.correct.map((t,i)=>`<b>${i+1}.</b> ${t}`).join('<br>');
+      if(wrongAnswer()){setTimeout(gameOver,60);return;}}
+    setTimeout(next,ok?750:2400);
+  };
+  draw();
+}
+
+function showCombo(){if(S.combo>1){const c=el('combo');if(c){c.textContent=`combo ×${S.combo.toFixed(1)}`;c.classList.add('show');}}}
+
+/* ===========================================================================
+   RUN LOOPS
+   =========================================================================== */
+function nextQuestion(){
+  if(queue){if(qIndex>=queue.length)return win();
+    const t=queue[qIndex];Q=t==='mc'?makeMC():t==='num'?makeNum():makeSeq();}
+  else{Q=MODE==='mc'?makeMC():MODE==='num'?makeNum():makeSeq();}
+  Q.type==='mc'?renderMC(Q):Q.type==='num'?renderNum(Q):renderSeq(Q);
+}
+function next(){if(queue)qIndex++;setTimeout(nextQuestion,650);}
+function run(mode){MODE=mode;queue=null;S.score=0;S.streak=0;S.lives=3;S.combo=1;syncHUD();nextQuestion();}
+function startCampaign(){MODE=null;S.score=0;S.streak=0;S.lives=3;S.combo=1;syncHUD();
+  queue=['seq','mc','mc','num','seq','mc','num','num','seq','mc','num','seq'];qIndex=0;nextQuestion();}
+function quit(){queue=null;modeMenu(CUR);}
+
+function gameOver(){
+  const retry=queue?'startCampaign()':`run('${MODE}')`;
+  setTimeout(()=>{
+   screen.innerHTML=`
+    <div class="card center">
+      <div class="pill" style="background:var(--bad)">Out of lives</div>
+      <div class="big">💥</div>
+      <div class="scoreline">
+        <div><span>${S.score}</span><small>score</small></div>
+        <div><span>${S.lvl}</span><small>level</small></div>
+        <div><span>${S.best}</span><small>best streak</small></div></div>
+      <p class="muted">Every miss showed you the right move — that's the rep that sticks.</p>
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <button class="btn primary" onclick="${retry}">Try again</button>
+        <button class="btn" style="width:auto" onclick="modeMenu('${CUR}')">Modes</button></div>
+    </div>`;
+  },queue&&Q&&Q.type==='seq'?2400:900);
+}
+function win(){
+  toast('🏁 Run complete!');
+  screen.innerHTML=`
+    <div class="card center">
+      <div class="pill" style="background:var(--gold);color:#3a2c00">Campaign cleared</div>
+      <div class="big">🏆</div>
+      <div class="scoreline">
+        <div><span>${S.score}</span><small>score</small></div>
+        <div><span>${S.lvl}</span><small>level</small></div>
+        <div><span>${S.lives}</span><small>lives left</small></div></div>
+      <p class="muted">${curName()} — cleared. Run it again for a higher combo, or try another module.</p>
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <button class="btn primary" onclick="startCampaign()">Run again</button>
+        <button class="btn" style="width:auto" onclick="home()">Modules</button></div>
+    </div>`;
+}
+
+/* ===========================================================================
+   WATCH & LEARN — guided fill of the SW9 closed-loop sheet (Module 3)
+   =========================================================================== */
+const ANG=[
+ {stn:'Hub 1',obs:"91° 35′ 32″",bal:"91° 35′ 38″"},
+ {stn:'Hub 2',obs:"94° 48′ 37″",bal:"94° 48′ 43″"},
+ {stn:'Hub 3',obs:"124° 46′ 00″",bal:"124° 46′ 06″"},
+ {stn:'Hub 4',obs:"82° 46′ 18″",bal:"82° 46′ 24″"},
+ {stn:'LP14',obs:"146° 03′ 03″",bal:"146° 03′ 09″"},
+];
+const LEGSTART={leg:'LP14 · start',E:'1095.166',N:'4789.769'};
+const LEG=[
+ {leg:'LP14→Hub 1',brg:"90° 00′ 00″", d:'83.099', dE:'+83.099', dN:'0.000',  E:'1178.262',N:'4789.773'},
+ {leg:'Hub 1→Hub 2',brg:"01° 35′ 38″",d:'97.471', dE:'+2.711',  dN:'+97.433',E:'1180.969',N:'4887.211'},
+ {leg:'Hub 2→Hub 3',brg:"276° 24′ 21″",d:'125.405',dE:'−124.622',dN:'+13.991',E:'1056.342',N:'4901.208'},
+ {leg:'Hub 3→Hub 4',brg:"221° 10′ 27″",d:'71.333', dE:'−46.962', dN:'−53.693',E:'1009.377',N:'4847.518'},
+ {leg:'Hub 4→LP14',brg:"123° 56′ 51″",d:'103.421',dE:'+85.793', dN:'−57.754',E:'1095.166',N:'4789.769'},
+];
+const ACOLS=[['stn','Station'],['obs','Observed'],['adj','+ Adj'],['bal','Balanced']];
+const LCOLS=[['leg','Leg'],['brg','Bearing'],['d','Dist'],['dE','ΔE'],['dN','ΔN'],['E','Easting'],['N','Northing']];
+function aCell(r,k){return k==='adj'?'+6″':(r[k]||'');}
+function cellHTML(v,key,hl){const on=hl.includes(key)&&v!=='';return `<td class="${on?'hl':''}">${v}</td>`;}
+function tblAngles(cols,hl){
+  const cs=ACOLS.filter(c=>cols.includes(c[0]));
+  let h='<div class="lesson-tbl"><table class="mini"><tr>'+cs.map(c=>`<th class="${hl.includes(c[0])?'hl':''}">${c[1]}</th>`).join('')+'</tr>';
+  ANG.forEach(r=>{h+='<tr>'+cs.map(c=>cellHTML(aCell(r,c[0]),c[0],hl)).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+function tblLegs(cols,hl){
+  const cs=LCOLS.filter(c=>cols.includes(c[0]));
+  let h='<div class="lesson-tbl"><table class="mini"><tr>'+cs.map(c=>`<th class="${hl.includes(c[0])?'hl':''}">${c[1]}</th>`).join('')+'</tr>';
+  const rows=[LEGSTART,...LEG];
+  rows.forEach(r=>{h+='<tr>'+cs.map(c=>cellHTML(r[c[0]]||'',c[0],hl)).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+const recapHTML=()=>`<ol class="proc">${M3.procs[0].list.map(s=>`<li>${s}</li>`).join('')}</ol>`;
+
+const FRAMES=[
+ {head:"Let's fill a real traverse sheet — slowly",tbl:'angles',cols:['stn'],hl:[],
+  body:"This is the loop survey around the SW9 building from your notes. We'll walk all the way around it and fill the sheet one piece at a time. No quiz here — just read each step and press <b>Next ▸</b>.",
+  foot:"We begin at the 5 corners where angles were measured."},
+ {head:"Step 1 · Add up the angles you measured",tbl:'angles',cols:['stn','obs'],hl:['obs'],
+  body:"At each corner the instrument measured one angle. The very first job is simple: add all five together.",
+  foot:"Σ Observed = <b>539° 59′ 30″</b>"},
+ {head:"Step 2 · Compare to the 'perfect' total",tbl:'angles',cols:['stn','obs'],hl:[],
+  body:"A 5-sided loop's angles <i>must</i> add up to (5 − 2) × 180° = 540°. Ours came to 539° 59′ 30″ — we're 30″ short. That little gap is the <b>angular misclosure</b>.",
+  foot:"Σ True = <b>540°</b> &nbsp;→&nbsp; miss = 539° 59′ 30″ − 540° = <b>−30″</b>"},
+ {head:"Step 3 · Share the error out fairly",tbl:'angles',cols:['stn','obs','adj','bal'],hl:['adj','bal'],
+  body:"We're 30″ short across 5 angles, so add <b>+6″</b> to every angle (30″ ÷ 5). The angles are now <b>balanced</b> — they add to exactly 540°. From here on we only use the balanced angles.",
+  foot:"Same idea will come back later — find the miss, then spread it evenly."},
+ {head:"Step 4 · Here's the route and how long each line is",tbl:'legs',cols:['leg','d'],hl:['d'],
+  body:"Now switch to the <b>legs</b> — the lines between corners. Five legs take us around the loop and back to LP14. Each distance was measured in the field.",
+  foot:"Total distance walked &nbsp; Σs = <b>480.729 m</b>"},
+ {head:"Step 5 · Turn the angles into directions (bearings)",tbl:'legs',cols:['leg','brg','d'],hl:['brg'],
+  body:"We were given the first direction: LP14 → Hub 1 is due east, <b>90°</b>. Then each balanced angle 'turns' you onto the next leg.<br><span class='muted'>Rule: new bearing = old bearing + balanced angle − 180°. &nbsp;e.g. 90° + 91° 35′ 38″ − 180° = 1° 35′ 38″.</span>",
+  foot:"Because we used <i>balanced</i> angles, the directions will close perfectly at the end."},
+ {head:"Step 6 · Split each line into East and North",tbl:'legs',cols:['leg','brg','d','dE','dN'],hl:['dE','dN'],
+  body:"Each leg moves you partly east and partly north. Use the bearing and distance:<br><b>ΔE = dist × sin(bearing)</b> &nbsp; <b>ΔN = dist × cos(bearing)</b>.<br>These are the <b>departures</b> (ΔE) and <b>latitudes</b> (ΔN).",
+  foot:"e.g. leg 2: &nbsp;97.471 × sin(1° 35′ 38″) = +2.711 E, &nbsp;× cos = +97.433 N"},
+ {head:"Step 7 · Add the E's and the N's — should be zero",tbl:'legs',cols:['leg','brg','d','dE','dN'],hl:[],
+  body:"It's a loop, so if everything were perfect the ΔE's would cancel to 0 and so would the ΔN's. Ours come to +0.019 and −0.023 — a tiny miss of about 3 cm. That's the <b>positional misclosure</b>.",
+  foot:"Σ ΔE = <b>+0.019 m</b> &nbsp; Σ ΔN = <b>−0.023 m</b>"},
+ {head:"Step 8 · Spread that tiny miss along the legs",tbl:'legs',cols:['leg','brg','d','dE','dN'],hl:[],
+  body:"The <b>Compass (Bowditch) Rule</b> shares the 3 cm out in proportion to each leg's length — longer legs get a slightly bigger nudge. It's exactly like Step 3, but for position instead of angle.",
+  foot:"adjust factor = −miss ÷ Σs, &nbsp;then × each leg's distance."},
+ {head:"Step 9 · Add the legs up to get the coordinates",tbl:'legs',cols:['leg','dE','dN','E','N'],hl:['E','N'],
+  body:"Start at LP14's known position, then add each (adjusted) ΔE and ΔN to step from corner to corner. Watch the <b>last row</b> — we arrive back at LP14 with the exact starting coordinates. It closes! ✅",
+  foot:"Back to LP14 = <b>1095.166 E, 4789.769 N</b> — the same point we started from."},
+ {head:"Step 10 · Score the survey",tbl:'legs',cols:['leg','E','N'],hl:[],
+  body:"Finally, how good was it? Linear error <b>er = √(eE² + eN²) = 0.030 m</b> over 480.729 m walked. As a ratio that's about <b>1 part in 16,000</b> — a tidy loop.",
+  foot:"er = 0.030 m &nbsp;→&nbsp; Relative Precision = <b>1 : 16,000</b>"},
+ {head:"That's the whole order 🎉",tbl:'recap',cols:[],hl:[],
+  body:"Every closed-loop traverse follows these same steps, top to bottom. This is exactly the order the <b>Sequence It</b> quiz asks you to rebuild — now it should feel familiar.",
+  foot:"Read it through once more, then give the quiz a go."},
+];
+
+function openFig(){
+  el('figTables').innerHTML=
+   `<table class="mini"><tr><th>Leg</th><th>Bearing</th><th>Dist (m)</th></tr>`+
+   LEG.map(l=>`<tr><td>${l.leg}</td><td>${l.brg}</td><td>${l.d}</td></tr>`).join('')+
+   `<tr><td><b>Σs</b></td><td></td><td><b>480.729</b></td></tr></table>`+
+   `<table class="mini" style="margin-top:10px"><tr><th>Angle at</th><th>Observed</th><th>Balanced (+6″)</th></tr>`+
+   ANG.map(a=>`<tr><td>${a.stn}</td><td>${a.obs}</td><td>${a.bal}</td></tr>`).join('')+
+   `<tr><td><b>Σ</b></td><td><b>539°59′30″</b></td><td><b>540°00′00″</b></td></tr></table>`+
+   `<table class="mini" style="margin-top:10px"><tr><th>Station</th><th>Easting</th><th>Northing</th></tr>`+
+   `<tr><td>LP14</td><td>1095.166</td><td>4789.769</td></tr>`+
+   LEG.map(l=>`<tr><td>${l.leg.split('→')[1]}</td><td>${l.E}</td><td>${l.N}</td></tr>`).join('')+
+   `</table>`;
+  el('figModal').classList.add('show');
+}
+function closeFig(){el('figModal').classList.remove('show');}
+
+let lessonI=0,lessonTimer=null;
+function clearLessonTimer(){if(lessonTimer){clearInterval(lessonTimer);lessonTimer=null;}}
+function startLesson(){lessonI=0;clearLessonTimer();renderLesson();}
+function renderLesson(){
+  const f=FRAMES[lessonI], last=lessonI===FRAMES.length-1;
+  const table=f.tbl==='recap'?recapHTML():f.tbl==='angles'?tblAngles(f.cols,f.hl):tblLegs(f.cols,f.hl);
+  const dots=FRAMES.map((_,i)=>`<i class="${i===lessonI?'on':i<lessonI?'done':''}"></i>`).join('');
+  const playing=!!lessonTimer;
+  const showFig=f.tbl!=='recap';
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="clearLessonTimer();modeMenu('${CUR}')">◂ Menu</a> · Watch &amp; Learn · closed-loop traverse</div>
+     <div class="dots">${dots}</div>
+     <div class="lesson-head">${f.head}</div>
+     ${showFig?'<div id="figInline"></div>':''}
+     <p class="lead">${f.body}</p>
+     ${table}
+     ${f.foot?`<div class="kfoot">${f.foot}</div>`:''}
+     <div class="footer" style="margin-top:16px">
+       <div class="row">
+         <button class="btn" style="width:auto" onclick="lessonBack()" ${lessonI===0?'disabled':''}>◂ Back</button>
+         <button class="btn" style="width:auto" onclick="lessonAuto()">${playing?'⏸ Pause':'▶ Auto'}</button>
+       </div>
+       ${last
+         ? `<button class="btn primary" onclick="clearLessonTimer();run('seq')">Try the quiz ▸</button>`
+         : `<button class="btn primary" onclick="lessonNext()">Next ▸</button>`}
+     </div>
+   </div>`;
+  if(showFig){const src=document.querySelector('#figModal .figsvg');
+    if(src) el('figInline').appendChild(src.cloneNode(true));}
+}
+function lessonNext(){if(lessonI<FRAMES.length-1){lessonI++;renderLesson();}else clearLessonTimer();}
+function lessonBack(){clearLessonTimer();if(lessonI>0){lessonI--;renderLesson();}}
+function lessonAuto(){
+  if(lessonTimer){clearLessonTimer();renderLesson();return;}
+  lessonTimer=setInterval(()=>{
+    if(lessonI<FRAMES.length-1){lessonI++;renderLesson();}else{clearLessonTimer();renderLesson();}
+  },4200);
+  renderLesson();
+}
+
+/* ===========================================================================
+   STEP DRILL — Phase 1: Angle Balancing, taught backwards (military style)
+   Tiny steps, one screen each, with a worksheet that builds up.
+   Backward chaining: Rung 1 = last step only … Rung 5 = whole thing.
+   =========================================================================== */
+function secToDMS(t){let sg=t<0?'-':'';t=Math.round(Math.abs(t));
+  let d=Math.floor(t/3600);t-=d*3600;let m=Math.floor(t/60);let s=t-m*60;
+  return `${sg}${d}° ${String(m).padStart(2,'0')}′ ${String(s).padStart(2,'0')}″`;}
+const sgn=n=>(n>0?'+':'')+n;
+function genAngleProblem(){
+  for(;;){
+    let misc=(Math.floor(Math.random()*21)-10)*5;          // −50..+50, step 5
+    if(misc===0) misc=5;
+    const target=540*3600+misc;
+    let angs=[],sum=0;
+    for(let i=0;i<4;i++){const a=(70+Math.floor(Math.random()*70))*3600+Math.floor(Math.random()*3600);angs.push(a);sum+=a;}
+    const fifth=target-sum;
+    if(fifth<60*3600||fifth>165*3600) continue;
+    angs.push(fifth); angs=shuffle(angs);
+    return {angs,misc,corr:-misc/5,sumSec:target};
+  }
+}
+function revealSum(p){
+  const parts=p.angs.map(a=>({d:Math.floor(a/3600),m:Math.floor((a%3600)/60),s:a%60}));
+  const Ss=parts.reduce((t,x)=>t+x.s,0), cM=Math.floor(Ss/60), sF=Ss%60;
+  const Sm=parts.reduce((t,x)=>t+x.m,0)+cM, cD=Math.floor(Sm/60), mF=Sm%60;
+  const Sd=parts.reduce((t,x)=>t+x.d,0)+cD;
+  return `Seconds: ${parts.map(x=>x.s).join(' + ')} = ${Ss}″ → write ${sF}″, carry ${cM}′.<br>`+
+         `Minutes: ${parts.map(x=>x.m).join(' + ')} + ${cM} = ${Sm}′ → write ${mF}′, carry ${cD}°.<br>`+
+         `Degrees: ${parts.map(x=>x.d).join(' + ')} + ${cD} = ${Sd}°.<br><b>Σ = ${Sd}° ${String(mF).padStart(2,'0')}′ ${String(sF).padStart(2,'0')}″</b>`;
+}
+function buildABsteps(p){
+  const bal=p.angs[0]+p.corr;
+  return [
+   {label:'Σ measured angles', val:secToDMS(p.sumSec),
+    prompt:'Add the five measured angles shown above (①–⑤) together. Type the total as <b>d m s</b> (e.g. 539 59 30).',
+    ans:p.sumSec/3600, tol:4/3600,
+    hint:'Add the seconds first (every 60″ carries 1′), then the minutes (every 60′ carries 1°), then the degrees.',
+    reveal:revealSum(p)},
+   {label:'Should total · n = 5', val:'540°',
+    prompt:'What <i>should</i> the angles add up to? You have <b>n = 5</b> angles, so use (n − 2) × 180° = (5 − 2) × 180°. Answer in degrees.',
+    ans:540, tol:0.001, hint:'Five corners: (5 − 2) × 180.', reveal:'(5 − 2) × 180° = <b>540°</b>.'},
+   {label:'Misclosure', val:sgn(p.misc)+'″',
+    prompt:'Misclosure = your sum − 540°. Answer in <b>seconds</b>, with a + or −.',
+    ans:p.misc, tol:1, hint:'Subtract 540° from your total — the leftover is just seconds.',
+    reveal:`Your sum − 540° = <b>${sgn(p.misc)}″</b>. ${p.misc<0?'Short of 540° → negative.':'Over 540° → positive.'}`},
+   {label:'Correction / angle', val:sgn(p.corr)+'″',
+    prompt:'Correction for each angle = − misclosure ÷ n. You have <b>n = 5</b> angles (see givens), so divide by 5. Seconds, with sign.',
+    ans:p.corr, tol:0.5, hint:'Flip the sign of the misclosure, then divide by n = 5.',
+    reveal:`−(${p.misc}) ÷ 5 = <b>${sgn(p.corr)}″</b> added to every angle.`},
+   {label:'Balanced angle ①', val:secToDMS(bal),
+    prompt:`Apply it. Angle ① was <b>${secToDMS(p.angs[0])}</b>. Add the ${sgn(p.corr)}″ correction and give the balanced value (d m s).`,
+    ans:bal/3600, tol:4/3600, hint:'Add the correction to the seconds. If they pass 60, carry 1′. (You would do this same +'+sgn(p.corr).slice(0,1)+' to all five angles.)',
+    reveal:`${secToDMS(p.angs[0])} ${p.corr<0?'−':'+'} ${Math.abs(p.corr)}″ = <b>${secToDMS(bal)}</b>.`},
+  ];
+}
+function givensAngles(p){
+  const circ=['①','②','③','④','⑤'];
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(74,209,164,.10)">
+    <b>What you're given</b> &nbsp;·&nbsp; n = <b>5</b> angles measured:<br>
+    <span style="font-variant-numeric:tabular-nums;line-height:1.9">${p.angs.map((a,i)=>circ[i]+' '+secToDMS(a)).join(' &nbsp; ')}</span>
+  </div>`;
+}
+
+/* ---- Module 6 drills: trig levelling ---- */
+const dms2=d=>secToDMS(Math.round(d*3600));            // decimal degrees → "d° m′ s″"
+const r3=x=>Math.round(x*1000)/1000;
+function genShortline(){
+  const elevA=r3(100+Math.random()*300), Hi=r3(1.40+Math.random()*0.45), Ht=r3(1.40+Math.random()*0.45);
+  const SD=r3(40+Math.random()*160);
+  const ZA=((80*3600)+Math.floor(Math.random()*(20*3600)))/3600;   // 80–100°, whole arcsec
+  const vc=SD*Math.cos(ZA*Math.PI/180), dH=Hi+vc-Ht, elevB=elevA+dH;
+  return {elevA,Hi,Ht,SD,ZA,vc,dH,elevB};
+}
+function buildShortline(p){const f=x=>x.toFixed(3);return [
+  {label:'Vertical part · SD·cos(ZA)', val:f(p.vc)+' m',
+   prompt:`Work out the vertical part of the slope: <b>SD · cos(ZA)</b> = ${f(p.SD)} × cos(${dms2(p.ZA)}). Metres, 3 dp — mind the sign.`,
+   ans:p.vc, tol:0.01,
+   hint:'ZA is the ZENITH angle (from straight up), so use cos. ZA over 90° ⇒ cos negative ⇒ downhill.',
+   reveal:`${f(p.SD)} × cos(${dms2(p.ZA)}) = <b>${f(p.vc)} m</b>.`},
+  {label:'Height difference · ΔH', val:f(p.dH)+' m',
+   prompt:`ΔH = Hi + (SD·cos ZA) − Ht = ${f(p.Hi)} + (${f(p.vc)}) − ${f(p.Ht)}. Metres, 3 dp.`,
+   ans:p.dH, tol:0.012, hint:'Add the instrument height Hi, subtract the target height Ht.',
+   reveal:`${f(p.Hi)} + ${f(p.vc)} − ${f(p.Ht)} = <b>${f(p.dH)} m</b>.`},
+  {label:'Elevation of B', val:f(p.elevB)+' m',
+   prompt:`Elev of B = Elev of A + ΔH = ${f(p.elevA)} + (${f(p.dH)}). Metres, 3 dp.`,
+   ans:p.elevB, tol:0.012, hint:'Just add the height difference to the known elevation of A.',
+   reveal:`${f(p.elevA)} + ${f(p.dH)} = <b>${f(p.elevB)} m</b>.`},
+]; }
+function givensShortline(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,158,125,.12)">
+    <b>What you're given</b> — sight from A to B:<br>
+    <span style="line-height:1.9">Elev of A = <b>${f(p.elevA)} m</b> &nbsp; Hi = <b>${f(p.Hi)} m</b> &nbsp; Ht = <b>${f(p.Ht)} m</b><br>
+    Slope distance SD = <b>${f(p.SD)} m</b> &nbsp; Zenith angle ZA = <b>${dms2(p.ZA)}</b></span></div>`;
+}
+function genRecip(){
+  const elevA=r3(100+Math.random()*250), t=3+Math.random()*6;
+  const zaAB=Math.round((90-t)*3600)/3600, zaBA=Math.round((90+t+(Math.random()*40-20)/3600)*3600)/3600;
+  const SDab=r3(50+Math.random()*120), SDba=r3(SDab+(Math.random()*0.04-0.02));
+  const meanZA=(zaAB+180-zaBA)/2, meanSD=(SDab+SDba)/2;
+  const elevB=elevA+meanSD*Math.cos(meanZA*Math.PI/180);
+  return {elevA,zaAB,zaBA,SDab,SDba,meanZA,meanSD,elevB};
+}
+function buildRecip(p){const f=x=>x.toFixed(3);return [
+  {label:'Mean zenith angle', val:dms2(p.meanZA),
+   prompt:`Hi = Ht, so average the zeniths: <b>mean ZA = (ZA<sub>AB</sub> + 180° − ZA<sub>BA</sub>) ⁄ 2</b> = (${dms2(p.zaAB)} + 180° − ${dms2(p.zaBA)}) ⁄ 2. Answer d m s.`,
+   ans:p.meanZA, tol:6/3600,
+   hint:'Add 180° to the forward angle, subtract the reverse angle, then halve — lands near the forward value.',
+   reveal:`(${dms2(p.zaAB)} + 180° − ${dms2(p.zaBA)}) ⁄ 2 = <b>${dms2(p.meanZA)}</b>.`},
+  {label:'Mean slope distance', val:f(p.meanSD)+' m',
+   prompt:`mean SD = (SD<sub>AB</sub> + SD<sub>BA</sub>) ⁄ 2 = (${f(p.SDab)} + ${f(p.SDba)}) ⁄ 2. Metres, 3 dp.`,
+   ans:p.meanSD, tol:0.005, hint:'Plain average of the two measured distances.',
+   reveal:`(${f(p.SDab)} + ${f(p.SDba)}) ⁄ 2 = <b>${f(p.meanSD)} m</b>.`},
+  {label:'Elevation of B', val:f(p.elevB)+' m',
+   prompt:`Heights cancel (Hi = Ht): <b>Elev_B = Elev_A + SD<sub>mean</sub>·cos(ZA<sub>mean</sub>)</b> = ${f(p.elevA)} + ${f(p.meanSD)} × cos(${dms2(p.meanZA)}). Metres, 3 dp.`,
+   ans:p.elevB, tol:0.02, hint:'Use your mean SD and mean ZA: cos of the mean zenith, × mean distance, + Elev_A.',
+   reveal:`${f(p.elevA)} + ${f(p.meanSD)} × cos(${dms2(p.meanZA)}) = <b>${f(p.elevB)} m</b>.`},
+]; }
+function givensRecip(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,158,125,.12)">
+    <b>What you're given</b> — reciprocal sights, <b>Hi = Ht</b> (so they cancel):<br>
+    <span style="line-height:1.9">Elev of A = <b>${f(p.elevA)} m</b><br>
+    A→B:&nbsp; ZA = <b>${dms2(p.zaAB)}</b>, &nbsp;SD = <b>${f(p.SDab)} m</b><br>
+    B→A:&nbsp; ZA = <b>${dms2(p.zaBA)}</b>, &nbsp;SD = <b>${f(p.SDba)} m</b></span></div>`;
+}
+
+/* ---- Module 3 drill: Compass (Bowditch) Rule corrections ---- */
+function genCompass(){
+  const nLegs=4+Math.floor(Math.random()*2);
+  let legs=[];
+  for(let i=0;i<nLegs-1;i++){const d=50+Math.random()*120, b=Math.random()*360;
+    legs.push({d, dE:d*Math.sin(b*Math.PI/180), dN:d*Math.cos(b*Math.PI/180)});}
+  const sumE=legs.reduce((t,l)=>t+l.dE,0), sumN=legs.reduce((t,l)=>t+l.dN,0);
+  const rs=()=>Math.random()<0.5?-1:1;
+  const eEt=rs()*(0.006+Math.random()*0.022), eNt=rs()*(0.006+Math.random()*0.022);
+  legs.push({d:Math.hypot(eEt-sumE,eNt-sumN), dE:eEt-sumE, dN:eNt-sumN});
+  legs=legs.map(l=>({d:r3(l.d), dE:r3(l.dE), dN:r3(l.dN)}));
+  const Ss=r3(legs.reduce((t,l)=>t+l.d,0));
+  const eE=r3(legs.reduce((t,l)=>t+l.dE,0)), eN=r3(legs.reduce((t,l)=>t+l.dN,0));
+  const focus=Math.floor(Math.random()*legs.length), fl=legs[focus];
+  const corrE=-eE*fl.d/Ss, corrN=-eN*fl.d/Ss;
+  return {legs, Ss, eE, eN, focus, corrE, corrN, adjE:fl.dE+corrE, adjN:fl.dN+corrN};
+}
+function buildCompass(p){
+  const f=x=>x.toFixed(3), fl=p.legs[p.focus], L=p.focus+1;
+  return [
+   {label:'East misclosure · eE = ΣΔE', val:f(p.eE)+' m',
+    prompt:`Add up the ΔE column (the departures). A closed loop comes back to its start, so they <i>should</i> total <b>0</b> — whatever's left over is the East misclosure <b>eE</b>. (3 dp, signed)`,
+    ans:p.eE, tol:0.004, hint:'Just sum every leg\'s ΔE. The little leftover is the misclosure.',
+    reveal:`ΣΔE = <b>${f(p.eE)} m</b>.`},
+   {label:'North misclosure · eN = ΣΔN', val:f(p.eN)+' m',
+    prompt:`Now sum the ΔN column (the latitudes) for the North misclosure <b>eN</b>. (3 dp, signed)`,
+    ans:p.eN, tol:0.004, hint:'Sum every leg\'s ΔN.', reveal:`ΣΔN = <b>${f(p.eN)} m</b>.`},
+   {label:`Leg ${L} · ΔE correction`, val:f(p.corrE)+' m',
+    prompt:`Correct leg <b>${L}</b> in proportion to its length: <b>corr = −eE × (d ⁄ Σs)</b> = −(${f(p.eE)}) × (${f(fl.d)} ⁄ ${f(p.Ss)}). (3 dp, signed)`,
+    ans:p.corrE, tol:0.0015,
+    hint:'Here\'s the difference from angle balancing: share by LENGTH (d ⁄ Σs), not equally — longer legs absorb more.',
+    reveal:`−(${f(p.eE)}) × (${f(fl.d)} ⁄ ${f(p.Ss)}) = <b>${f(p.corrE)} m</b>.`},
+   {label:`Leg ${L} · ΔN correction`, val:f(p.corrN)+' m',
+    prompt:`Same idea for the North side: <b>corr = −eN × (d ⁄ Σs)</b> = −(${f(p.eN)}) × (${f(fl.d)} ⁄ ${f(p.Ss)}). (3 dp, signed)`,
+    ans:p.corrN, tol:0.0015, hint:'Same proportional share, using eN.',
+    reveal:`−(${f(p.eN)}) × (${f(fl.d)} ⁄ ${f(p.Ss)}) = <b>${f(p.corrN)} m</b>.`},
+   {label:`Leg ${L} · adjusted ΔE`, val:f(p.adjE)+' m',
+    prompt:`Apply it: adjusted ΔE = ΔE + correction = ${f(fl.dE)} + (${f(p.corrE)}). (3 dp)`,
+    ans:p.adjE, tol:0.0015, hint:'Add the correction onto the original ΔE.',
+    reveal:`${f(fl.dE)} + (${f(p.corrE)}) = <b>${f(p.adjE)} m</b>.`},
+   {label:`Leg ${L} · adjusted ΔN`, val:f(p.adjN)+' m',
+    prompt:`And adjusted ΔN = ΔN + correction = ${f(fl.dN)} + (${f(p.corrN)}). (3 dp)`,
+    ans:p.adjN, tol:0.0015, hint:'Add the correction onto the original ΔN.',
+    reveal:`${f(fl.dN)} + (${f(p.corrN)}) = <b>${f(p.adjN)} m</b>.`},
+  ];
+}
+function givensCompass(p){
+  const f=x=>x.toFixed(3), sg=x=>(x>=0?'+':'')+f(x);
+  const rows=p.legs.map((l,i)=>`<tr${i===p.focus?' style="background:rgba(255,209,102,.20)"':''}><td>${i+1}${i===p.focus?' ◀':''}</td><td style="text-align:right">${f(l.d)}</td><td style="text-align:right">${sg(l.dE)}</td><td style="text-align:right">${sg(l.dN)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(74,209,164,.10)">
+    <b>What you're given</b> — a closed loop; we're adjusting <b>leg ${p.focus+1}</b> (highlighted):
+    <table class="mini" style="margin-top:6px"><tr><th>Leg</th><th>Dist</th><th>ΔE</th><th>ΔN</th></tr>${rows}
+    <tr><td><b>Σs</b></td><td style="text-align:right"><b>${f(p.Ss)}</b></td><td>—</td><td>—</td></tr></table></div>`;
+}
+
+/* ---- drill registry ---- */
+const DRILLS={
+ m3_angles:{module:'m3', title:'Angle Balancing', phase:'M3 · Phase 1',
+   card:'Balancing the angles. Tiny steps — last step first, build up to the whole thing. Fresh numbers, no clock.',
+   intro:['Add up the five measured angles','Work out what they <i>should</i> total — (n−2)×180°','Find the <b>misclosure</b> (how far off)','Find the <b>correction</b> for each angle','Apply it → the balanced angle'],
+   gen:genAngleProblem, build:buildABsteps, givens:givensAngles},
+ m3_compass:{module:'m3', title:'Compass-Rule Corrections', phase:'M3 · Phase 5',
+   card:'Bowditch / Compass Rule: spread the positional misclosure along the legs — by LENGTH this time, not equally. Six tiny steps.',
+   intro:['East misclosure eE = ΣΔE','North misclosure eN = ΣΔN','Leg correction (ΔE) = −eE × (d ⁄ Σs)','Leg correction (ΔN) = −eN × (d ⁄ Σs)','Adjusted ΔE = ΔE + correction','Adjusted ΔN = ΔN + correction'],
+   credit:'The Compass / <b>Bowditch</b> Rule — after Nathaniel Bowditch, American navigator (1773–1838), borrowed by surveyors from his sea-traverse methods.',
+   gen:genCompass, build:buildCompass, givens:givensCompass},
+ m6_short:{module:'m6', title:'Short-line Elevation', phase:'M6 · Phase J',
+   card:'One trig-levelling line. Three steps: the vertical part, the height difference, the new elevation.',
+   intro:['Vertical part = SD · cos(ZA)','Height difference ΔH = Hi + SD·cos ZA − Ht','Elevation of B = Elev of A + ΔH'],
+   gen:genShortline, build:buildShortline, givens:givensShortline},
+ m6_recip:{module:'m6', title:'Reciprocal Levelling', phase:'M6 · Phase K (A6 Q1)',
+   card:'Forward + reverse sights with Hi = Ht — the A6 Q1 type. Mean the angle, mean the distance, get the elevation.',
+   intro:['Mean zenith angle = (ZA_AB + 180° − ZA_BA) ⁄ 2','Mean slope distance = (SD_AB + SD_BA) ⁄ 2','Elev of B = Elev of A + SD_mean · cos(ZA_mean)'],
+   gen:genRecip, build:buildRecip, givens:givensRecip},
+};
+
+let DR={def:null,p:null,steps:[],idx:0,start:0,rung:1,showHint:false,showReveal:false};
+
+function startDrill(key){ DR.def=DRILLS[key]; clearLessonTimer(); drillIntro(); }
+function drillIntro(){
+  const d=DR.def, n=d.intro.length;
+  const words=['','one','two','three','four','five','six'][n]||n;
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="modeMenu('${CUR}')">◂ Menu</a> · Step Drill · ${d.title}</div>
+     <div class="pill s">${d.phase} · go slow</div>
+     <p class="qtext" style="margin-top:12px">${d.title} — built backwards 🪜</p>
+     <p class="sub">The ${words} little steps, in order:</p>
+     <ol class="proc">${d.intro.map(s=>`<li>${s}</li>`).join('')}</ol>
+     ${d.credit?`<p class="sub" style="font-style:italic;margin-top:8px">${d.credit}</p>`:''}
+     <div class="kfoot">We'll learn these <b>back to front</b>. Round 1: you do only the <b>last</b> step (the rest filled in for you). Each round adds one more step at the front, until you run all ${n} cold. Fresh numbers every time — no memorising. No lives, no clock.</div>
+     <div class="footer"><span class="tag">Rung 1 of ${n}</span>
+       <button class="btn primary" onclick="drillRung(1)">Start with the last step ▸</button></div>
+   </div>`;
+}
+function drillRung(r){
+  const d=DR.def; DR.rung=r; DR.p=d.gen(); DR.steps=d.build(DR.p);
+  DR.start=DR.steps.length-r; DR.idx=DR.start; DR.showHint=false; DR.showReveal=false;
+  renderDrill();
+}
+function givensHTML(){ return DR.def.givens(DR.p); }
+function worksheetHTML(){
+  let rows='';
+  DR.steps.forEach((s,i)=>{
+    let state,cell;
+    if(i<DR.start){state='given';cell=`<span class="muted">${s.val}</span>`;}
+    else if(i<DR.idx){state='done';cell=`<b style="color:var(--good)">${s.val}</b>`;}
+    else if(i===DR.idx){state='now';cell='<span style="color:var(--acc2)">▶ your turn</span>';}
+    else {state='soon';cell='<span class="muted">—</span>';}
+    rows+=`<tr><td>${i+1}. ${s.label}</td><td style="text-align:right">${cell}</td>
+       <td style="width:74px;color:var(--mut);font-size:11px">${state==='given'?'given':state==='done'?'✓':''}</td></tr>`;
+  });
+  return `<table class="mini">${rows}</table>`;
+}
+function renderDrill(){
+  const s=DR.steps[DR.idx];
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="modeMenu('${CUR}')">◂ Menu</a> · Step Drill · Rung ${DR.rung} of ${DR.steps.length}</div>
+     <div class="dots">${DR.steps.map((_,i)=>`<i class="${i+1<=DR.rung?'on':''}"></i>`).join('')}</div>
+     ${givensHTML()}
+     ${worksheetHTML()}
+     <div class="lesson-head" style="margin-top:14px">Step ${DR.idx+1}: ${s.label}</div>
+     <p class="lead">${s.prompt}</p>
+     <div class="num"><input id="dans" type="text" autocomplete="off" inputmode="text" placeholder="type here…">
+       <button class="btn primary" id="dgo">Check</button></div>
+     <div class="row" style="margin-top:8px">
+       <button class="btn" style="width:auto" onclick="DR.showHint=true;renderKeep()">💡 Hint</button>
+       <button class="btn" style="width:auto" onclick="DR.showReveal=true;renderKeep()">👁 Show me</button>
+     </div>
+     ${DR.showHint?`<div class="kfoot">💡 ${s.hint}</div>`:''}
+     ${DR.showReveal?`<div class="kfoot">👁 ${s.reveal}</div>`:''}
+     <div class="fb" id="dfb"></div>
+   </div>`;
+  const inp=el('dans'); inp.focus();
+  const go=()=>{
+    const raw=inp.value.trim(); if(raw==='')return;
+    const v=parseDMS(raw); const fb=el('dfb');
+    if(v!==null && Math.abs(v-s.ans)<=s.tol){
+      award(8); syncHUD();
+      DR.idx++; DR.showHint=false; DR.showReveal=false;
+      if(DR.idx>=DR.steps.length) return drillRungDone();
+      renderDrill();
+    } else {
+      fb.className='fb show no';
+      fb.innerHTML=`Not quite — try again, or tap <b>💡 Hint</b> or <b>👁 Show me</b>.`;
+    }
+  };
+  el('dgo').onclick=go;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+}
+// re-render but keep whatever's typed (for hint/reveal toggles)
+function renderKeep(){const cur=el('dans')?el('dans').value:'';renderDrill();if(el('dans'))el('dans').value=cur;}
+function drillRungDone(){
+  const n=DR.steps.length, last=DR.rung===n;
+  const nextLabel=last?'':DR.steps[n-DR.rung-1].label;
+  screen.innerHTML=`
+   <div class="card center">
+     <div class="pill" style="background:var(--good);color:#04231b">Rung ${DR.rung} done</div>
+     <div class="big">${last?'🎖️':'✅'}</div>
+     <p class="qtext">${last?`You ran all ${n} steps, front to back!`:`You handled the last ${DR.rung} step${DR.rung>1?'s':''}.`}</p>
+     <p class="muted">${last
+        ?'That’s the whole thing from a cold start. Do it again for speed, or move on.'
+        :`Next round adds one more step at the front — you’ll start from <b>“${nextLabel}”</b>.`}</p>
+     <div class="row" style="justify-content:center;margin-top:10px">
+       ${last
+         ? `<button class="btn primary" onclick="drillRung(${n})">Run it again</button>`
+         : `<button class="btn primary" onclick="drillRung(${DR.rung+1})">Next rung ▸ (do ${DR.rung+1} steps)</button>
+            <button class="btn" style="width:auto" onclick="drillRung(${DR.rung})">Repeat this rung</button>`}
+       <button class="btn" style="width:auto" onclick="modeMenu('${CUR}')">Menu</button>
+     </div>
+   </div>`;
+}
+
+syncHUD();home();
+</script>
+</body>
+</html>
