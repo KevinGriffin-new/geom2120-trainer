@@ -8,7 +8,7 @@
   :root{
     --bg:#0e1220; --panel:#171c2e; --panel2:#1f2740; --ink:#e8ecf7; --mut:#93a0c0;
     --line:#2a3350; --acc:#4ad1a4; --acc2:#5b9cff; --warn:#ffb454; --bad:#ff6b81;
-    --good:#3ddc97; --gold:#ffd166; --m3:#4ad1a4; --m4:#5b9cff; --m5:#c08bff; --m6:#ff9e7d;
+    --good:#3ddc97; --gold:#ffd166; --m1:#f6c945; --m2:#7fd1e8; --m3:#4ad1a4; --m4:#5b9cff; --m5:#c08bff; --m6:#ff9e7d;
     --r:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
@@ -71,7 +71,7 @@
   .mode h3{margin:0 0 3px;font-size:16px}
   .mode p{margin:0;color:var(--mut);font-size:13px}
   .mode .tag{font-size:11px;color:var(--mut)}
-  .m3b{border-left-color:var(--m3)} .m4b{border-left-color:var(--m4)} .m5b{border-left-color:var(--m5)} .m6b{border-left-color:var(--m6)} .allb{border-left-color:var(--gold)}
+  .m1b{border-left-color:var(--m1)} .m2b{border-left-color:var(--m2)} .m3b{border-left-color:var(--m3)} .m4b{border-left-color:var(--m4)} .m5b{border-left-color:var(--m5)} .m6b{border-left-color:var(--m6)} .allb{border-left-color:var(--gold)}
   .center{text-align:center}
   .big{font-size:40px;margin:6px 0}
   .tag{font-size:12px;color:var(--mut)}
@@ -160,7 +160,7 @@
 
 <div class="wrap">
   <div class="topbar">
-    <h1>Survey Computations Trainer <small>GEOM 2120 · Modules 3–5 · final-exam practice</small></h1>
+    <h1>Survey Computations Trainer <small>GEOM 2120 · Modules 1–6 · practice &amp; step drills</small></h1>
     <div class="hud">
       <span class="chip">Lvl <b class="lv" id="hudLvl">1</b></span>
       <span class="chip">Score <b id="hudScore">0</b></span>
@@ -174,7 +174,7 @@
 
 <script>
 /* ===========================================================================
-   GEOM 2120 — Survey Computations Trainer (Modules 3, 4, 5)
+   GEOM 2120 — Survey Computations Trainer (Modules 1–6)
    Content grounded in the L3A/L3B, L4A/L4B, L5A/L5B lecture worked examples.
    =========================================================================== */
 
@@ -197,6 +197,116 @@ function parseDMS(str){
    procs : ordering puzzles      mcq : concept multiple-choice
    num   : numeric generators    formulae : cheat-sheet html
    =========================================================================== */
+
+const M1={
+ key:'m1', name:'Module 1 — Units & Conversions', emo:'🔁', cls:'m1b', colour:'var(--m1)',
+ blurb:'The fundamentals that quietly cost marks: legal/metric units, and angle units — degrees ↔ gons ↔ radians ↔ DMS, plus interior vs exterior angle sums.',
+ procs:[
+  {title:'Convert gons → degrees-minutes-seconds',list:[
+   'Decimal degrees = gons × 0.9  (since 400 gon = 360°)',
+   'Whole degrees D = the integer part',
+   'Minutes = (decimal part) × 60; whole minutes M = integer part',
+   'Seconds = (leftover) × 60, rounded → assemble D° M′ S″']},
+  {title:'Convert degrees → gons',list:[
+   'Gons = degrees × (400 ⁄ 360) = degrees × 1.1111…',
+   'Keep the required decimal places']},
+ ],
+ mcq:[
+  {q:"A full circle contains how many gons (grads)?",
+   opts:["400","360","2π","100"],a:0,why:"By definition 400 gon = one full circle = 360°."},
+  {q:"A full circle contains how many radians?",
+   opts:["2π","π","400","360"],a:0,why:"One full turn = 2π radians."},
+  {q:"The sum of the EXTERIOR angles of an n-sided polygon is…",
+   opts:["(n + 2) × 180°","(n − 2) × 180°","n × 180°","360°"],a:0,
+   why:"Exterior: (n + 2) × 180°. (Interior is (n − 2) × 180°.)"},
+  {q:"The sum of the INTERIOR angles of an n-sided polygon is…",
+   opts:["(n − 2) × 180°","(n + 2) × 180°","360°","n × 90°"],a:0,
+   why:"Interior: (n − 2) × 180° — the one used to balance a closed-loop traverse."},
+  {q:"To convert gons to degrees you multiply by…",
+   opts:["0.9  (= 360 ⁄ 400)","1.1111  (= 400 ⁄ 360)","π ⁄ 180","60"],a:0,
+   why:"gon → deg is × 0.9; deg → gon is × 1.1111."},
+  {q:"One Gunter's chain equals…",
+   opts:["100 links (20.1168 m)","10 links","1000 links (1 km)","66 m"],a:0,
+   why:"1 chain = 100 links = 66 ft = 20.1168 m."},
+ ],
+ num:[
+  ()=>({q:"Convert 299° to gons (4 dp). Multiply by 400 ⁄ 360.",
+        ans:299*400/360,tol:0.005,unit:' gon',why:'299 × 400⁄360 = <span class="formula">332.2222 gon</span>.'}),
+  ()=>({q:"Convert 96°42′49″ to radians (× π ⁄ 180). 6 dp.",
+        ans:dmsToDeg(96,42,49)*Math.PI/180,tol:0.0005,unit:' rad',
+        why:'96.713611° × π⁄180 = <span class="formula">1.687975 rad</span>.'}),
+  ()=>({q:"Convert 365.892284 gon to decimal degrees (× 0.9). 4 dp.",
+        ans:365.892284*0.9,tol:0.005,unit:'°',why:'365.892284 × 0.9 = <span class="formula">329.3030°</span> (= 329°18′11″).'}),
+  ()=>({q:"Exterior angle sum of a 9-sided polygon: (n + 2) × 180°? (degrees)",
+        ans:(9+2)*180,tol:0.5,unit:'°',why:'(9 + 2) × 180° = <span class="formula">1980°</span>.'}),
+  ()=>({q:"6 chains in metres (1 chain = 20.1168 m). 3 dp.",
+        ans:6*20.1168,tol:0.01,unit:' m',why:'6 × 20.1168 = <span class="formula">120.701 m</span>.'}),
+ ],
+ formulae:`Full circle = 360° = 400 gon = 2π rad<br>
+   gon → deg: × 0.9   ·   deg → gon: × 1.1111   ·   deg → rad: × π⁄180<br>
+   Interior Σ = (n − 2) × 180°   ·   <b>Exterior Σ = (n + 2) × 180°</b><br>
+   1 chain = 100 links = 66 ft = 20.1168 m`
+};
+
+const M2={
+ key:'m2', name:'Module 2 — Angles & Distances', emo:'🔺', cls:'m2b', colour:'var(--m2)',
+ blurb:'Vertical & zenith angles (VA = 90° − ZA), reducing a slope distance to horizontal (HD) and vertical (ΔH), and bearings — Whole Circle ↔ Quadrant.',
+ procs:[
+  {title:'Reduce a slope distance (with the angle)',list:[
+   'If given VA, get the zenith: ZA = 90° − VA (or VA = 90° − ZA)',
+   'Horizontal distance HD = SD · sin(ZA)  (= SD · cos VA)',
+   'Vertical distance ΔH = SD · cos(ZA)  (= SD · sin VA), keep the sign']},
+  {title:'Whole Circle Bearing → Quadrant Bearing',list:[
+   'Find the quadrant from the WCB (NE 0–90, SE 90–180, SW 180–270, NW 270–360)',
+   'NE: N a E · SE: S (180−a) E · SW: S (a−180) W · NW: N (360−a) W']},
+ ],
+ mcq:[
+  {q:"The vertical angle (VA) and zenith angle (ZA) are related by…",
+   opts:["VA = 90° − ZA","VA = ZA − 90°","VA = 180° − ZA","VA = ZA"],a:0,
+   why:"Zenith is from straight up, vertical from horizontal; they sum to 90°."},
+  {q:"A zenith angle of 98° corresponds to a vertical angle of…",
+   opts:["−8° (below horizontal)","+8°","+82°","−82°"],a:0,
+   why:"VA = 90° − 98° = −8°; a ZA over 90° means a downhill (negative) sight."},
+  {q:"To reduce a slope distance to horizontal: HD =",
+   opts:["SD · sin(ZA)  (= SD · cos VA)","SD · cos(ZA)","SD · tan(ZA)","SD ⁄ sin(ZA)"],a:0,
+   why:"HD = SD·sin(ZA) = SD·cos(VA)."},
+  {q:"The vertical distance from a slope distance is ΔH =",
+   opts:["SD · cos(ZA)  (= SD · sin VA)","SD · sin(ZA)","SD · tan(VA)","SD − HD"],a:0,
+   why:"ΔH = SD·cos(ZA) = SD·sin(VA); its sign follows the slope."},
+  {q:"A Whole Circle Bearing of 210° is in which quadrant?",
+   opts:["SW → S 30° W","NE → N 30° E","SE → S 30° E","NW → N 30° W"],a:0,
+   why:"180–270° is the SW quadrant; QB = S (210−180) W = S 30° W."},
+  {q:"WCB 135° as a quadrant bearing is…",
+   opts:["S 45° E","N 45° E","S 45° W","N 45° W"],a:0,
+   why:"90–180° is SE; QB = S (180−135) E = S 45° E."},
+  {q:"Quadrant bearing N 20° W as a Whole Circle Bearing is…",
+   opts:["340°","020°","200°","160°"],a:0,
+   why:"NW quadrant: WCB = 360° − 20° = 340°."},
+  {q:"A POSITIVE vertical angle (+) means the line of sight is…",
+   opts:["above the horizontal (uphill)","below the horizontal","exactly level","vertical"],a:0,
+   why:"VA is measured from horizontal, increasing upward (+)."},
+ ],
+ num:[
+  ()=>({q:"ZA = 98°14′59″. Vertical angle VA = 90° − ZA? (d m s, with sign)",
+        ans:90-dmsToDeg(98,14,59),tol:5/3600,unit:'',disp:'−8°14′59″',
+        why:'90° − 98°14′59″ = <span class="formula">−8°14′59″</span> (downhill).'}),
+  ()=>({q:"VA = +42°19′59″. Zenith angle ZA = 90° − VA? (d m s)",
+        ans:90-dmsToDeg(42,19,59),tol:5/3600,unit:'',disp:'47°40′01″',
+        why:'90° − 42°19′59″ = <span class="formula">47°40′01″</span>.'}),
+  ()=>({q:"SD = 198.324 m, VA = +6°17′21″. HD = SD·cos(VA)? (3 dp)",
+        ans:198.324*Math.cos(dmsToDeg(6,17,21)*Math.PI/180),tol:0.01,unit:' m',
+        why:'198.324 × cos(6°17′21″) = <span class="formula">197.131 m</span>.'}),
+  ()=>({q:"SD = 257.566 m, VA = −17°09′59″. ΔH = SD·sin(VA)? (3 dp, signed)",
+        ans:-257.566*Math.sin(dmsToDeg(17,9,59)*Math.PI/180),tol:0.01,unit:' m',
+        why:'257.566 × sin(−17°09′59″) = <span class="formula">−76.022 m</span>.'}),
+  ()=>({q:"WCB = 181°11′19″ is in the SW quadrant. The quadrant-bearing angle (WCB − 180°)? (d m s)",
+        ans:dmsToDeg(1,11,19),tol:5/3600,unit:'',disp:'1°11′19″ → S 1°11′19″ W',
+        why:'181°11′19″ − 180° = <span class="formula">1°11′19″</span>, so S 1°11′19″ W.'}),
+ ],
+ formulae:`VA = 90° − ZA  (and ZA = 90° − VA) · +VA above horizontal, −VA below<br>
+   HD = SD·sin(ZA) = SD·cos(VA) · ΔH = SD·cos(ZA) = SD·sin(VA)<br>
+   WCB→QB:  NE 0–90 → N a E · SE 90–180 → S(180−a)E · SW 180–270 → S(a−180)W · NW 270–360 → N(360−a)W`
+};
 
 const M3={
  key:'m3', name:'Module 3 — Closed Traverse', emo:'📐', cls:'m3b', colour:'var(--m3)',
@@ -523,7 +633,7 @@ const M6={
    Loop: ΣΔH should = 0; distribute the misclosure by HD (like compass rule); gradient = ΔElev⁄HD × 100%`
 };
 
-const MODULES={m3:M3,m4:M4,m5:M5,m6:M6};
+const MODULES={m1:M1,m2:M2,m3:M3,m4:M4,m5:M5,m6:M6};
 
 /* ---------- game state ---------- */
 const S={score:0,streak:0,best:Number(localStorage.gx_best||0),lives:3,xp:0,lvl:1,combo:1};
@@ -564,11 +674,11 @@ function home(){
      <p class="qtext" style="margin-top:12px">What do you want to drill?</p>
      <p class="sub">Each module has the same three game types — learn the order, spot the formula, and work the real numbers from your lecture examples.</p>
      <div class="modegrid">
-       ${cardFor(M3)}${cardFor(M4)}${cardFor(M5)}${cardFor(M6)}
+       ${cardFor(M1)}${cardFor(M2)}${cardFor(M3)}${cardFor(M4)}${cardFor(M5)}${cardFor(M6)}
        <div class="card mode allb" onclick="modeMenu('all')">
          <div class="emo">🎓</div>
          <div><h3>Final Prep — All Modules Mixed</h3>
-         <p>Everything from Modules 3–6 shuffled together. Closest thing to the real exam.</p></div>
+         <p>Everything from Modules 1–6 shuffled together — a mixed bag to keep you on your toes.</p></div>
        </div>
      </div>
      <div class="footer"><span class="tag">Best streak: <b>${S.best}</b> 🔥</span></div>
@@ -582,7 +692,7 @@ function modeMenu(key){
          <div class="emo">📖</div><div><h3>Watch &amp; Learn — start here <span class="tag">(no pressure)</span></h3>
          <p>See the whole traverse sheet filled in, one step at a time, in plain words. Best first stop if the steps feel fuzzy.</p></div></div>`:'';
   const drillCards=Object.entries(DRILLS).filter(([k,d])=>CUR==='all'||d.module===CUR)
-    .map(([k,d])=>{const cls=d.module==='m3'?'m3b':d.module==='m6'?'m6b':'m5b';
+    .map(([k,d])=>{const cls=d.module+'b';
       return `<div class="card mode ${cls}" onclick="startDrill('${k}')">
          <div class="emo">🪜</div><div><h3>Step Drill — ${d.title} <span class="tag">${d.phase}</span></h3>
          <p>${d.card}</p></div></div>`;}).join('');
@@ -999,10 +1109,16 @@ function genShortline(){
   const elevA=r3(100+Math.random()*300), Hi=r3(1.40+Math.random()*0.45), Ht=r3(1.40+Math.random()*0.45);
   const SD=r3(40+Math.random()*160);
   const ZA=((80*3600)+Math.floor(Math.random()*(20*3600)))/3600;   // 80–100°, whole arcsec
+  const HD=SD*Math.sin(ZA*Math.PI/180);
   const vc=SD*Math.cos(ZA*Math.PI/180), dH=Hi+vc-Ht, elevB=elevA+dH;
-  return {elevA,Hi,Ht,SD,ZA,vc,dH,elevB};
+  return {elevA,Hi,Ht,SD,ZA,HD,vc,dH,elevB};
 }
 function buildShortline(p){const f=x=>x.toFixed(3);return [
+  {label:'Horizontal distance · HD = SD·sin(ZA)', val:f(p.HD)+' m',
+   prompt:`First reduce the slope to horizontal: <b>HD = SD · sin(ZA)</b> = ${f(p.SD)} × sin(${dms2(p.ZA)}). Metres, 3 dp.`,
+   ans:p.HD, tol:0.01,
+   hint:'A slope distance gives you BOTH: HD = SD·sin(ZA) across the ground, and the vertical part = SD·cos(ZA). Exams ask for both — don\'t stop at one.',
+   reveal:`${f(p.SD)} × sin(${dms2(p.ZA)}) = <b>${f(p.HD)} m</b>.`},
   {label:'Vertical part · SD·cos(ZA)', val:f(p.vc)+' m',
    prompt:`Work out the vertical part of the slope: <b>SD · cos(ZA)</b> = ${f(p.SD)} × cos(${dms2(p.ZA)}). Metres, 3 dp — mind the sign.`,
    ans:p.vc, tol:0.01,
@@ -1109,8 +1225,377 @@ function givensCompass(p){
     <tr><td><b>Σs</b></td><td style="text-align:right"><b>${f(p.Ss)}</b></td><td>—</td><td>—</td></tr></table></div>`;
 }
 
+/* ---- Module 2 drill: ZA↔VA + slope-distance reduction ---- */
+const dms2signed=d=>(d>=0?'+':'')+dms2(d);
+function genReduce(){
+  const up=Math.random()<0.5, vaMag=Math.random()*28+1;     // 1–29° off horizontal
+  const VA=Math.round((up?1:-1)*vaMag*3600)/3600;            // signed, whole arcsec
+  const ZA=90-VA;                                            // exact complement
+  const SD=r3(40+Math.random()*280);
+  const HD=SD*Math.cos(VA*Math.PI/180);                      // = SD·sin(ZA)
+  const dH=SD*Math.sin(VA*Math.PI/180);                      // = SD·cos(ZA), signed
+  return {SD, ZA, VA, HD, dH, givenZA:Math.random()<0.5};
+}
+function buildReduce(p){
+  const f=x=>x.toFixed(3);
+  const gL=p.givenZA?'ZA':'VA', gV=p.givenZA?p.ZA:p.VA;
+  const oL=p.givenZA?'VA':'ZA', oV=p.givenZA?p.VA:p.ZA;
+  return [
+   {label:`Convert ${gL} → ${oL}`, val:dms2signed(oV),
+    prompt:`You're given ${gL} = <b>${dms2signed(gV)}</b>. Convert it: <b>${oL} = 90° − ${gL}</b>. Answer d m s (keep the + / − sign).`,
+    ans:oV, tol:5/3600,
+    hint:'Zenith is measured from straight up, vertical from the horizontal — they always sum to 90°. ZA over 90° ⇒ VA is negative (downhill).',
+    reveal:`90° − ${dms2signed(gV)} = <b>${dms2signed(oV)}</b>.`},
+   {label:'Horizontal distance · HD', val:f(p.HD)+' m',
+    prompt:`<b>HD = SD · sin(ZA)</b> (= SD · cos VA) = ${f(p.SD)} × sin(${dms2(p.ZA)}). Metres, 3 dp.`,
+    ans:p.HD, tol:0.01, hint:'HD uses sin of the zenith angle (or cos of the vertical angle).',
+    reveal:`${f(p.SD)} × sin(${dms2(p.ZA)}) = <b>${f(p.HD)} m</b>.`},
+   {label:'Vertical distance · ΔH', val:f(p.dH)+' m',
+    prompt:`<b>ΔH = SD · cos(ZA)</b> (= SD · sin VA) = ${f(p.SD)} × cos(${dms2(p.ZA)}). Metres, 3 dp — with sign.`,
+    ans:p.dH, tol:0.01,
+    hint:'ΔH uses cos of the zenith angle. ZA over 90° (VA negative) ⇒ ΔH negative (downhill).',
+    reveal:`${f(p.SD)} × cos(${dms2(p.ZA)}) = <b>${f(p.dH)} m</b>.`},
+  ];
+}
+function givensReduce(p){
+  const f=x=>x.toFixed(3), gL=p.givenZA?'ZA':'VA', gV=p.givenZA?p.ZA:p.VA;
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(127,209,232,.12)">
+    <b>What you're given</b> — a sight from A to B:<br>
+    <span style="line-height:1.9">Slope distance SD = <b>${f(p.SD)} m</b> &nbsp;·&nbsp; ${gL} = <b>${p.givenZA?dms2(gV):dms2signed(gV)}</b></span></div>`;
+}
+
+/* ---- Module 1 drill: gons → DMS conversion ---- */
+function genGons(){
+  const gon=Math.round((100+Math.random()*280)*1e6)/1e6;     // 100–380 gon, 6 dp (quiz-style)
+  const deg=gon*0.9;
+  let d=Math.floor(deg), mf=(deg-d)*60, m=Math.floor(mf), s=Math.round((mf-m)*60);
+  if(s===60){s=0;m++;} if(m===60){m=0;d++;}
+  return {gon, deg, d, m, s, dmsDeg:dmsToDeg(d,m,s)};
+}
+function buildGons(p){
+  const fd=x=>x.toFixed(4);
+  const mins=(p.deg-Math.floor(p.deg))*60;
+  return [
+   {label:'Gons → decimal degrees', val:fd(p.deg)+'°',
+    prompt:`Convert to degrees: <b>degrees = gons × 0.9</b> (since 400 gon = 360°) = ${p.gon} × 0.9. Decimal degrees, 4 dp.`,
+    ans:p.deg, tol:0.001, hint:'400 gon = 360°, so one gon = 0.9°. Multiply by 0.9.',
+    reveal:`${p.gon} × 0.9 = <b>${fd(p.deg)}°</b>.`},
+   {label:'Pull out the minutes', val:p.m+'′',
+    prompt:`Whole degrees D = <b>${p.d}°</b>. Turn the leftover into minutes: (${fd(p.deg)} − ${p.d}) × 60. Give the WHOLE minutes.`,
+    ans:p.m, tol:0.6, hint:'Subtract the whole degrees, × 60, keep the whole-number minutes.',
+    reveal:`(${fd(p.deg)} − ${p.d}) × 60 = ${mins.toFixed(3)}′ → <b>${p.m}′</b>.`},
+   {label:'Seconds → assemble d m s', val:secToDMS(Math.round(p.dmsDeg*3600)),
+    prompt:`Finish it: leftover minutes × 60 = seconds (round to nearest second). Give the full answer as <b>d m s</b>.`,
+    ans:p.dmsDeg, tol:3/3600, hint:'(minutes − whole minutes) × 60 = seconds. Then write D° M′ S″. (Your calculator\'s °′″ button does this in one press.)',
+    reveal:`= <b>${secToDMS(Math.round(p.dmsDeg*3600))}</b>.`},
+  ];
+}
+function givensGons(p){
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(246,201,69,.12)">
+    <b>What you're given</b> — convert this angle to degrees-minutes-seconds:<br>
+    <span style="font-size:16px"><b>${p.gon} gon</b></span> &nbsp;·&nbsp; reminder: 400 gon = 360°, so × 0.9.</div>`;
+}
+
+/* ---- Cross-cutting drill: signs on errors & corrections ---- */
+const sgnNum=x=>(x>=0?'+':'')+x;
+const sgnFix=x=>(x>=0?'+':'')+x.toFixed(3);
+function genSigns(){
+  const ctx=pick(['angular','easting','level']);
+  if(ctx==='angular'){
+    const n=pick([5,6,7]), trueDeg=(n-2)*180;
+    const cv=pick([-1,1])*pick([3,4,5,6,8]);        // per-angle correction (sec)
+    const e=-cv*n;                                   // misclosure = opposite of the correction
+    const obsSec=trueDeg*3600+e;
+    const angSec=(60+Math.floor(Math.random()*80))*3600+Math.floor(Math.random()*3600);
+    const adj=angSec+cv;
+    return {givens:`<div class="kfoot" style="margin:0 0 12px;background:rgba(74,209,164,.10)"><b>Context — closing a ${n}-angle loop.</b> &nbsp;The rule: <b>correction = − error</b> (always the opposite sign).</div>`,
+     steps:[
+      {label:'Misclosure (a subtraction)', val:sgnNum(e)+'″',
+       prompt:`ΣObs = <b>${secToDMS(obsSec)}</b>, ΣTrue = (${n}−2)×180° = <b>${trueDeg}°</b>. eβ = ΣObs − ΣTrue. Seconds, with sign.`,
+       ans:e, tol:1, hint:'Observed minus true. Over the target ⇒ +, under ⇒ −.',
+       reveal:`${secToDMS(obsSec)} − ${trueDeg}° = <b>${sgnNum(e)}″</b>.`},
+      {label:'Flip it → correction', val:sgnNum(-e)+'″',
+       prompt:`The correction is the <b>opposite</b> of the error: total correction = −eβ. Seconds, with sign.`,
+       ans:-e, tol:1, hint:`Flip the sign of the misclosure: −(${sgnNum(e)}).`,
+       reveal:`−(${sgnNum(e)}) = <b>${sgnNum(-e)}″</b> &nbsp;(= ${sgnNum(cv)}″ per angle).`},
+      {label:'Sign-aware apply', val:secToDMS(adj),
+       prompt:`One angle reads <b>${secToDMS(angSec)}</b>; its correction is <b>${sgnNum(cv)}″</b>. Adjusted = angle + correction. d m s.`,
+       ans:adj/3600, tol:4/3600, hint:'Add the correction; a negative one you subtract — mind the 60″ borrow.',
+       reveal:`${secToDMS(angSec)} ${cv<0?'−':'+'} ${Math.abs(cv)}″ = <b>${secToDMS(adj)}</b>.`},
+    ]};
+  }
+  const isE=ctx==='easting';
+  const sumv=r3(pick([-1,1])*(0.006+Math.random()*0.03));
+  const cv=r3(-Math.sign(sumv)*(0.002+Math.random()*0.006));
+  const comp=r3(pick([-1,1])*(30+Math.random()*120));
+  const adj=r3(comp+cv);
+  const el=isE?'ΔE':'ΔH', sumName=isE?'ΣΔE':'ΣΔH', what=isE?'departures':'height differences';
+  return {givens:`<div class="kfoot" style="margin:0 0 12px;background:rgba(74,209,164,.10)"><b>Context — ${isE?'closing the eastings of a loop traverse':'closing a levelling loop'}.</b> &nbsp;The rule: <b>correction = − error</b> (opposite sign).</div>`,
+   steps:[
+    {label:`Misclosure (${sumName})`, val:sgnFix(sumv)+' m',
+     prompt:`The ${what} sum to <b>${sgnFix(sumv)} m</b>. A closed loop should total <b>0</b>, so the misclosure = sum − 0. Metres, 3 dp, with sign.`,
+     ans:sumv, tol:0.0006, hint:'Loop target is zero, so the misclosure IS the sum — keep its sign.',
+     reveal:`${sgnFix(sumv)} − 0 = <b>${sgnFix(sumv)} m</b>.`},
+    {label:'Flip it → correction', val:sgnFix(-sumv)+' m',
+     prompt:`Corrections <b>oppose</b> the error: total correction = − misclosure. Metres, 3 dp, with sign.`,
+     ans:-sumv, tol:0.0006, hint:`Flip the sign: −(${sgnFix(sumv)}).`,
+     reveal:`−(${sgnFix(sumv)}) = <b>${sgnFix(-sumv)} m</b> &nbsp;(every ${el} correction takes this opposite sign).`},
+    {label:'Sign-aware apply', val:sgnFix(adj)+' m',
+     prompt:`One leg's ${el} = <b>${sgnFix(comp)} m</b>; its correction is <b>${sgnFix(cv)} m</b>. Adjusted ${el} = ${el} + correction. Metres, 3 dp.`,
+     ans:adj, tol:0.0015, hint:'Add the signed correction; a negative one makes it smaller.',
+     reveal:`${sgnFix(comp)} ${cv<0?'−':'+'} ${Math.abs(cv).toFixed(3)} = <b>${sgnFix(adj)} m</b>.`},
+  ]};
+}
+
+/* ===== Module 4, 5, 6 drills ===== */
+const brgOf=(dE,dN)=>((Math.atan2(dE,dN)*180/Math.PI)+360)%360;   // dE,dN → WCB 0–360
+const RAD=Math.PI/180;
+function vAngleAt(P,U,V){const ax=U.E-P.E,ay=U.N-P.N,bx=V.E-P.E,by=V.N-P.N;
+  return Math.acos((ax*bx+ay*by)/(Math.hypot(ax,ay)*Math.hypot(bx,by)))/RAD;}
+const dist2=(p,q)=>Math.hypot(q.E-p.E,q.N-p.N);
+
+/* M4 · swing angle (traverse between two known points) */
+function genSwing(){
+  const Es=r3(1000+Math.random()*300), Ns=r3(1000+Math.random()*300);
+  const aT=Math.random()*360, s=r3(200+Math.random()*300);
+  const En=r3(Es+s*Math.sin(aT*RAD)), Nn=r3(Ns+s*Math.cos(aT*RAD));
+  const delta=Math.round((pick([-1,1])*(3+Math.random()*12))*3600)/3600;
+  const aA=((aT+delta)%360+360)%360;
+  const SE=r3(s*Math.sin(aA*RAD)), SN=r3(s*Math.cos(aA*RAD));
+  const trueB=brgOf(En-Es,Nn-Ns), assumedB=brgOf(SE,SN);
+  let sw=assumedB-trueB; if(sw>180)sw-=360; if(sw<-180)sw+=360;
+  return {Es,Ns,En,Nn,SE,SN,trueB,assumedB,sw};
+}
+function buildSwing(p){const f=x=>x.toFixed(3);return [
+  {label:'Assumed bearing (start → end)', val:dms2(p.assumedB),
+   prompt:`From the assumed-bearing run, the sums are ΣΔE = <b>${f(p.SE)}</b>, ΣΔN = <b>${f(p.SN)}</b>. Assumed bearing = tan⁻¹(ΣΔE ⁄ ΣΔN), placed in the right quadrant. Answer d m s.`,
+   ans:p.assumedB, tol:0.01, hint:'tan⁻¹(ΔE⁄ΔN); if ΔN is negative add 180°, if only ΔE is negative add 360°.',
+   reveal:`tan⁻¹(${f(p.SE)} ⁄ ${f(p.SN)}) → <b>${dms2(p.assumedB)}</b>.`},
+  {label:'True bearing (inverse of knowns)', val:dms2(p.trueB),
+   prompt:`Inverse between the known coordinates: true bearing = tan⁻¹((E_end − E_start) ⁄ (N_end − N_start)). Answer d m s.`,
+   ans:p.trueB, tol:0.01, hint:'Same inverse, using the known start and end coordinates.',
+   reveal:`tan⁻¹(${f(p.En-p.Es)} ⁄ ${f(p.Nn-p.Ns)}) → <b>${dms2(p.trueB)}</b>.`},
+  {label:'Swing angle', val:dms2signed(p.sw),
+   prompt:`The swing rotates the assumed traverse onto the true line: <b>swing = assumed − true</b>. Answer d m s, with sign.`,
+   ans:p.sw, tol:0.01, hint:'Subtract the true bearing from the assumed bearing. Applied to every leg bearing (angles unchanged).',
+   reveal:`${dms2(p.assumedB)} − ${dms2(p.trueB)} = <b>${dms2signed(p.sw)}</b>.`},
+]; }
+function givensSwing(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(91,156,255,.12)">
+   <b>What you're given</b> — closed traverse between two known points, run on an assumed bearing:<br>
+   <span style="line-height:1.9">Start = <b>${f(p.Es)} E, ${f(p.Ns)} N</b> &nbsp; End = <b>${f(p.En)} E, ${f(p.Nn)} N</b><br>
+   Assumed-run sums: ΣΔE = <b>${f(p.SE)} m</b>, ΣΔN = <b>${f(p.SN)} m</b></span></div>`;
+}
+
+/* M4 · single distance blunder */
+function genBlunder(){
+  const b=Math.random()*360, blunder=r3(4+Math.random()*11);
+  const eE=r3(blunder*Math.sin(b*RAD)), eN=r3(blunder*Math.cos(b*RAD));
+  const er=Math.hypot(eE,eN), errB=brgOf(eE,eN);
+  const nLegs=5, culprit=Math.floor(Math.random()*nLegs), legs=[];
+  for(let i=0;i<nLegs;i++){let lb=i===culprit?(Math.random()<0.5?errB:(errB+180)%360):Math.random()*360;
+    legs.push({brg:Math.round(lb*3600)/3600,d:r3(80+Math.random()*150)});}
+  return {eE,eN,er,errB,legs,culprit};
+}
+function buildBlunder(p){const f=x=>x.toFixed(3);return [
+  {label:'Size of the relative error', val:f(p.er)+' m',
+   prompt:`Angles check out but the position misses by eE = <b>${f(p.eE)}</b>, eN = <b>${f(p.eN)}</b>. Its length er = √(eE² + eN²). Metres, 3 dp.`,
+   ans:p.er, tol:0.02, hint:'√(eE² + eN²) — this ≈ the size of the distance blunder.',
+   reveal:`√(${f(p.eE)}² + ${f(p.eN)}²) = <b>${f(p.er)} m</b>.`},
+  {label:'Bearing of the error', val:dms2(p.errB),
+   prompt:`Bearing of the relative error = tan⁻¹(eE ⁄ eN), in the right quadrant. Answer d m s.`,
+   ans:p.errB, tol:0.02, hint:'Same inverse as a bearing; mind the quadrant from the signs of eE and eN.',
+   reveal:`tan⁻¹(${f(p.eE)} ⁄ ${f(p.eN)}) → <b>${dms2(p.errB)}</b>.`},
+  {label:'Which leg is the blunder?', val:'leg '+(p.culprit+1),
+   prompt:`Compare that bearing to each leg below. The blunder is the leg whose bearing matches it (or is exactly 180° opposite). Enter the leg number.`,
+   ans:p.culprit+1, tol:0.1, hint:'A distance error only shifts you along that leg, so the error bearing lines up with the bad leg (± 180°).',
+   reveal:`Leg <b>${p.culprit+1}</b> (bearing ${dms2(p.legs[p.culprit].brg)}) matches the error bearing — re-measure it.`},
+]; }
+function givensBlunder(p){const f=x=>x.toFixed(3);
+  const rows=p.legs.map((l,i)=>`<tr><td>${i+1}</td><td style="text-align:right">${dms2(l.brg)}</td><td style="text-align:right">${f(l.d)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(91,156,255,.12)">
+   <b>What you're given</b> — positional misclosure eE = <b>${f(p.eE)} m</b>, eN = <b>${f(p.eN)} m</b>; the legs:
+   <table class="mini" style="margin-top:6px"><tr><th>Leg</th><th>Bearing</th><th>Dist</th></tr>${rows}</table></div>`;
+}
+
+/* M5 · three-point resection */
+function genResection(){
+  for(let tries=0;tries<200;tries++){
+    const P={E:r3(1000+Math.random()*200),N:r3(1000+Math.random()*200)};
+    const bA=Math.random()*360, Xd=28+Math.random()*44, Yd=28+Math.random()*44;   // B angularly between A and C
+    const ptAt=ang=>{const d=200+Math.random()*260;return {E:r3(P.E+d*Math.sin(ang*RAD)),N:r3(P.N+d*Math.cos(ang*RAD))};};
+    const A=ptAt(bA), B=ptAt(bA+Xd), C=ptAt(bA+Xd+Yd);
+    const X=vAngleAt(P,A,B), Y=vAngleAt(P,B,C);
+    const Atrue=vAngleAt(A,B,P), Ctrue=vAngleAt(C,B,P);
+    const angB=360-(X+Y)-(Atrue+Ctrue);               // identity → hub lands exactly; = triangle angle for this standard config
+    const S=360-(X+Y+angB);
+    if(X<25||X>80||Y<25||Y>80||angB<55||angB>160||Atrue<20||Atrue>85||Ctrue<20||Ctrue>85) continue;
+    const c=dist2(A,B), a=dist2(B,C);
+    const k=(a*Math.sin(X*RAD))/(c*Math.sin(Y*RAD));
+    const Cang=Math.atan(Math.sin(S*RAD)/(k+Math.cos(S*RAD)))/RAD, Aang=S-Cang;
+    const B1=180-(X+Aang), B2=180-(Y+Cang);
+    const AP=c*Math.sin(B1*RAD)/Math.sin(X*RAD), CP=a*Math.sin(B2*RAD)/Math.sin(Y*RAD);
+    return {c:r3(c),a:r3(a),angB,X,Y,S,k,Aang,Cang,B1,B2,AP,CP,A,B,C,P};
+  }
+  return genResection();
+}
+function buildResection(p){const f=x=>x.toFixed(3);return [
+  {label:'(A + C) = 360° − (X + Y + B)', val:dms2(p.S),
+   prompt:`Sum of the unknown angles: <b>(A + C) = 360° − (X + Y + B)</b> = 360° − (${dms2(p.X)} + ${dms2(p.Y)} + ${dms2(p.angB)}). Answer d m s.`,
+   ans:p.S, tol:0.02, hint:'Add the two observed angles and angle B, subtract from 360°.',
+   reveal:`360° − (${dms2(p.X)} + ${dms2(p.Y)} + ${dms2(p.angB)}) = <b>${dms2(p.S)}</b>.`},
+  {label:'Constant k = (a·sinX) ⁄ (c·sinY)', val:p.k.toFixed(6),
+   prompt:`<b>k = (a · sin X) ⁄ (c · sin Y)</b> = (${f(p.a)} × sin ${dms2(p.X)}) ⁄ (${f(p.c)} × sin ${dms2(p.Y)}). 6 dp.`,
+   ans:p.k, tol:0.0005, hint:'k = sin A ⁄ sin C; it tells you how A and C split.',
+   reveal:`(${f(p.a)}·sin ${dms2(p.X)}) ⁄ (${f(p.c)}·sin ${dms2(p.Y)}) = <b>${p.k.toFixed(6)}</b>.`},
+  {label:'Angle C = tan⁻¹[ sinS ⁄ (k + cosS) ]', val:dms2(p.Cang),
+   prompt:`With S = (A+C) and k known: <b>C = tan⁻¹[ sin S ⁄ (k + cos S) ]</b>, S = ${dms2(p.S)}. Answer d m s.`,
+   ans:p.Cang, tol:0.02, hint:'Plug S and k straight in; the result is angle C.',
+   reveal:`tan⁻¹[ sin ${dms2(p.S)} ⁄ (${p.k.toFixed(4)} + cos ${dms2(p.S)}) ] = <b>${dms2(p.Cang)}</b>.`},
+  {label:'Angle A = (A + C) − C', val:dms2(p.Aang),
+   prompt:`<b>A = (A + C) − C</b> = ${dms2(p.S)} − ${dms2(p.Cang)}. Answer d m s.`,
+   ans:p.Aang, tol:0.02, hint:'Just subtract C from the sum you found in step 1.',
+   reveal:`${dms2(p.S)} − ${dms2(p.Cang)} = <b>${dms2(p.Aang)}</b>.`},
+  {label:'B1 = 180° − (X + A)', val:dms2(p.B1),
+   prompt:`Triangle angle at B (A side): <b>B1 = 180° − (X + A)</b> = 180° − (${dms2(p.X)} + ${dms2(p.Aang)}). Answer d m s.`,
+   ans:p.B1, tol:0.02, hint:'180° minus the other two angles of that triangle.',
+   reveal:`180° − (${dms2(p.X)} + ${dms2(p.Aang)}) = <b>${dms2(p.B1)}</b>.`},
+  {label:'B2 = 180° − (Y + C)', val:dms2(p.B2),
+   prompt:`Other triangle: <b>B2 = 180° − (Y + C)</b> = 180° − (${dms2(p.Y)} + ${dms2(p.Cang)}). Answer d m s.`,
+   ans:p.B2, tol:0.02, hint:'Same idea with Y and C.',
+   reveal:`180° − (${dms2(p.Y)} + ${dms2(p.Cang)}) = <b>${dms2(p.B2)}</b>.`},
+  {label:'AP = c·sinB1 ⁄ sinX', val:f(p.AP)+' m',
+   prompt:`Sine law on triangle A-B-P: <b>AP = c · sin B1 ⁄ sin X</b> = ${f(p.c)} × sin ${dms2(p.B1)} ⁄ sin ${dms2(p.X)}. Metres, 3 dp.`,
+   ans:p.AP, tol:0.02, hint:'Distance from known point A to the hub.',
+   reveal:`${f(p.c)}·sin ${dms2(p.B1)} ⁄ sin ${dms2(p.X)} = <b>${f(p.AP)} m</b>.`},
+  {label:'CP = a·sinB2 ⁄ sinY', val:f(p.CP)+' m',
+   prompt:`And <b>CP = a · sin B2 ⁄ sin Y</b> = ${f(p.a)} × sin ${dms2(p.B2)} ⁄ sin ${dms2(p.Y)}. Metres, 3 dp. (AP and CP then give the hub coordinates — and the check.)`,
+   ans:p.CP, tol:0.02, hint:'Distance from known point C to the hub.',
+   reveal:`${f(p.a)}·sin ${dms2(p.B2)} ⁄ sin ${dms2(p.Y)} = <b>${f(p.CP)} m</b>.`},
+]; }
+function givensResection(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(192,139,255,.12)">
+   <b>What you're given</b> — angles X, Y observed at the unknown hub to three known points (A, B central, C):<br>
+   <span style="line-height:1.9">X = <b>${dms2(p.X)}</b> &nbsp; Y = <b>${dms2(p.Y)}</b><br>
+   From the known coordinates (by inverse): c = AB = <b>${f(p.c)} m</b>, &nbsp;a = BC = <b>${f(p.a)} m</b>, &nbsp;angle B = <b>${dms2(p.angB)}</b></span></div>`;
+}
+
+/* M5 · missing bearing & distance of one line */
+function genMissing(){
+  const legs=[]; for(let i=0;i<4;i++){const b=Math.random()*360,d=r3(60+Math.random()*180);
+    legs.push({brg:Math.round(b*3600)/3600,d,dE:r3(d*Math.sin(b*RAD)),dN:r3(d*Math.cos(b*RAD))});}
+  const sE=r3(legs.reduce((t,l)=>t+l.dE,0)), sN=r3(legs.reduce((t,l)=>t+l.dN,0));
+  const mE=r3(-sE), mN=r3(-sN), mBrg=brgOf(mE,mN), mDist=Math.hypot(mE,mN);
+  return {legs,sE,sN,mE,mN,mBrg,mDist};
+}
+function buildMissing(p){const f=x=>x.toFixed(3);return [
+  {label:'Σ ΔE of the known legs', val:sgnFix(p.sE)+' m',
+   prompt:`Add the ΔE column of the four known legs. Metres, 3 dp, with sign.`,
+   ans:p.sE, tol:0.004, hint:'Sum the departures of every known leg.', reveal:`ΣΔE = <b>${sgnFix(p.sE)} m</b>.`},
+  {label:'Σ ΔN of the known legs', val:sgnFix(p.sN)+' m',
+   prompt:`Add the ΔN column. Metres, 3 dp, with sign.`,
+   ans:p.sN, tol:0.004, hint:'Sum the latitudes of every known leg.', reveal:`ΣΔN = <b>${sgnFix(p.sN)} m</b>.`},
+  {label:'Missing ΔE = −ΣΔE', val:sgnFix(p.mE)+' m',
+   prompt:`The figure must close (totals = 0), so the missing leg's <b>ΔE = −ΣΔE</b>. Metres, 3 dp, signed.`,
+   ans:p.mE, tol:0.004, hint:'Closure: the missing leg makes the totals zero, so flip the sum.', reveal:`−(${sgnFix(p.sE)}) = <b>${sgnFix(p.mE)} m</b>.`},
+  {label:'Missing ΔN = −ΣΔN', val:sgnFix(p.mN)+' m',
+   prompt:`Likewise <b>ΔN = −ΣΔN</b>. Metres, 3 dp, signed.`,
+   ans:p.mN, tol:0.004, hint:'Same closure idea for the latitudes.', reveal:`−(${sgnFix(p.sN)}) = <b>${sgnFix(p.mN)} m</b>.`},
+  {label:'Missing bearing = tan⁻¹(ΔE ⁄ ΔN)', val:dms2(p.mBrg),
+   prompt:`Bearing of the missing line = tan⁻¹(ΔE ⁄ ΔN), in the right quadrant. d m s.`,
+   ans:p.mBrg, tol:0.02, hint:'Use the signs of ΔE and ΔN to pick the quadrant.', reveal:`tan⁻¹(${sgnFix(p.mE)} ⁄ ${sgnFix(p.mN)}) → <b>${dms2(p.mBrg)}</b>.`},
+  {label:'Missing distance = √(ΔE² + ΔN²)', val:f(p.mDist)+' m',
+   prompt:`Length of the missing line = √(ΔE² + ΔN²). Metres, 3 dp.`,
+   ans:p.mDist, tol:0.01, hint:'The hypotenuse of its ΔE and ΔN.', reveal:`√(${sgnFix(p.mE)}² + ${sgnFix(p.mN)}²) = <b>${f(p.mDist)} m</b>.`},
+]; }
+function givensMissing(p){const f=x=>x.toFixed(3);
+  const rows=p.legs.map((l,i)=>`<tr><td>${i+1}</td><td style="text-align:right">${dms2(l.brg)}</td><td style="text-align:right">${f(l.d)}</td><td style="text-align:right">${sgnFix(l.dE)}</td><td style="text-align:right">${sgnFix(l.dN)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(192,139,255,.12)">
+   <b>What you're given</b> — a closed figure with one leg's bearing & distance unknown; the four known legs:
+   <table class="mini" style="margin-top:6px"><tr><th>Leg</th><th>Bearing</th><th>Dist</th><th>ΔE</th><th>ΔN</th></tr>${rows}</table></div>`;
+}
+
+/* M6 · loop levelling closure */
+function genLoopLevel(){
+  const n=4+Math.floor(Math.random()*2), legs=[];
+  for(let i=0;i<n-1;i++)legs.push({dH:r3(pick([-1,1])*(0.5+Math.random()*6)),HD:r3(40+Math.random()*120)});
+  const sumH=legs.reduce((t,l)=>t+l.dH,0), mis=r3(pick([-1,1])*(0.004+Math.random()*0.02));
+  legs.push({dH:r3(mis-sumH),HD:r3(40+Math.random()*120)});
+  const SH=r3(legs.reduce((t,l)=>t+l.dH,0)), SHD=r3(legs.reduce((t,l)=>t+l.HD,0));
+  const focus=Math.floor(Math.random()*legs.length), fl=legs[focus];
+  const corr=-SH*fl.HD/SHD, adj=fl.dH+corr, elevA=r3(80+Math.random()*200), elevB=r3(elevA+adj);
+  return {legs,SH,SHD,focus,corr,adj,elevA,elevB};
+}
+function buildLoopLevel(p){const f=x=>x.toFixed(3), fl=p.legs[p.focus], L=p.focus+1;return [
+  {label:'Misclosure ΣΔH', val:sgnFix(p.SH)+' m',
+   prompt:`Add the ΔH column. A closed level loop should total <b>0</b>, so the sum is the misclosure. Metres, 3 dp, signed.`,
+   ans:p.SH, tol:0.0015, hint:'Sum every leg\'s height difference; the leftover is the misclosure.', reveal:`ΣΔH = <b>${sgnFix(p.SH)} m</b>.`},
+  {label:'Σ HD', val:f(p.SHD)+' m',
+   prompt:`Add the horizontal-distance column. Metres, 3 dp.`,
+   ans:p.SHD, tol:0.01, hint:'Total length the level run covered.', reveal:`ΣHD = <b>${f(p.SHD)} m</b>.`},
+  {label:`Leg ${L} correction = −(ΣΔH ⁄ ΣHD)×HD`, val:sgnFix(p.corr)+' m',
+   prompt:`Distribute by distance (Compass Rule, for heights): <b>−(ΣΔH ⁄ ΣHD) × HD</b> = −(${sgnFix(p.SH)} ⁄ ${f(p.SHD)}) × ${f(fl.HD)}. Metres, 3 dp, signed.`,
+   ans:p.corr, tol:0.0015, hint:'Same shape as the traverse compass rule — share the misclosure by leg length, opposite sign.',
+   reveal:`−(${sgnFix(p.SH)} ⁄ ${f(p.SHD)}) × ${f(fl.HD)} = <b>${sgnFix(p.corr)} m</b>.`},
+  {label:`Leg ${L} adjusted ΔH`, val:sgnFix(p.adj)+' m',
+   prompt:`Adjusted ΔH = ΔH + correction = ${sgnFix(fl.dH)} + (${sgnFix(p.corr)}). Metres, 3 dp.`,
+   ans:p.adj, tol:0.0015, hint:'Add the signed correction to this leg\'s height difference.', reveal:`${sgnFix(fl.dH)} + (${sgnFix(p.corr)}) = <b>${sgnFix(p.adj)} m</b>.`},
+  {label:'Elevation of next station', val:f(p.elevB)+' m',
+   prompt:`The start of this leg is at <b>${f(p.elevA)} m</b>. Next elevation = start + adjusted ΔH. Metres, 3 dp.`,
+   ans:p.elevB, tol:0.0015, hint:'Add the adjusted height difference onto the known elevation.', reveal:`${f(p.elevA)} + ${sgnFix(p.adj)} = <b>${f(p.elevB)} m</b>.`},
+]; }
+function givensLoopLevel(p){const f=x=>x.toFixed(3);
+  const rows=p.legs.map((l,i)=>`<tr${i===p.focus?' style="background:rgba(255,209,102,.20)"':''}><td>${i+1}${i===p.focus?' ◀':''}</td><td style="text-align:right">${sgnFix(l.dH)}</td><td style="text-align:right">${f(l.HD)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,158,125,.12)">
+   <b>What you're given</b> — a closed levelling loop; adjusting <b>leg ${p.focus+1}</b> (start elevation ${f(p.elevA)} m):
+   <table class="mini" style="margin-top:6px"><tr><th>Leg</th><th>ΔH</th><th>HD</th></tr>${rows}</table></div>`;
+}
+
+/* M6 · long line (curvature & refraction) + gradient */
+function genLong(){
+  const SD=r3(400+Math.random()*1600), ZA=((85*3600)+Math.floor(Math.random()*(10*3600)))/3600;
+  const Hi=r3(1.4+Math.random()*0.4), Ht=r3(1.4+Math.random()*0.4);
+  const HD=SD*Math.sin(ZA*RAD), cr=0.0675*(HD/1000)*(HD/1000);
+  const dH=Hi+SD*Math.cos(ZA*RAD)-Ht+cr, elevA=r3(80+Math.random()*200), elevB=elevA+dH;
+  const grade=(elevB-elevA)/HD*100;
+  return {SD,ZA,Hi,Ht,HD,cr,dH,elevA,elevB,grade};
+}
+function buildLong(p){const f=x=>x.toFixed(3);return [
+  {label:'Horizontal distance HD', val:f(p.HD)+' m',
+   prompt:`Long sight — first the horizontal distance: <b>HD = SD · sin(ZA)</b> = ${f(p.SD)} × sin(${dms2(p.ZA)}). Metres, 3 dp.`,
+   ans:p.HD, tol:0.02, hint:'Needed both for the correction and the gradient.', reveal:`${f(p.SD)} × sin(${dms2(p.ZA)}) = <b>${f(p.HD)} m</b>.`},
+  {label:'Curvature + refraction (c−r)', val:f(p.cr)+' m',
+   prompt:`<b>(c−r) = 0.0675 × D²</b>, with D in <b>kilometres</b> (D = ${f(p.HD)} m = ${(p.HD/1000).toFixed(4)} km). Metres, 3 dp.`,
+   ans:p.cr, tol:0.003, hint:'Convert the distance to km first, then square it, then × 0.0675. Always ADDED.',
+   reveal:`0.0675 × ${(p.HD/1000).toFixed(4)}² = <b>${f(p.cr)} m</b>.`},
+  {label:'ΔH (with the correction)', val:sgnFix(p.dH)+' m',
+   prompt:`<b>ΔH = Hi + SD·cos(ZA) − Ht + (c−r)</b> = ${f(p.Hi)} + (${f(p.SD)}·cos ${dms2(p.ZA)}) − ${f(p.Ht)} + ${f(p.cr)}. Metres, 3 dp, signed.`,
+   ans:p.dH, tol:0.02, hint:'Same as short-line, plus the (c−r) term on the end.', reveal:`= <b>${sgnFix(p.dH)} m</b>.`},
+  {label:'Elevation of B', val:f(p.elevB)+' m',
+   prompt:`Elev of B = Elev of A + ΔH = ${f(p.elevA)} + (${sgnFix(p.dH)}). Metres, 3 dp.`,
+   ans:p.elevB, tol:0.02, hint:'Add ΔH to the known elevation of A.', reveal:`${f(p.elevA)} + ${sgnFix(p.dH)} = <b>${f(p.elevB)} m</b>.`},
+  {label:'Gradient (%)', val:p.grade.toFixed(3)+' %',
+   prompt:`Gradient = (ΔElevation ⁄ HD) × 100% = (${sgnFix(p.dH)} ⁄ ${f(p.HD)}) × 100. Percent, 3 dp. (Under the 2% limit?)`,
+   ans:p.grade, tol:0.02, hint:'Rise over run, as a percentage. Compare the magnitude to 2%.',
+   reveal:`(${sgnFix(p.dH)} ⁄ ${f(p.HD)}) × 100 = <b>${p.grade.toFixed(3)} %</b> — ${Math.abs(p.grade)<2?'within':'over'} the 2% limit.`},
+]; }
+function givensLong(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,158,125,.12)">
+   <b>What you're given</b> — a long sight from A to B:<br>
+   <span style="line-height:1.9">Elev of A = <b>${f(p.elevA)} m</b> &nbsp; Hi = <b>${f(p.Hi)} m</b> &nbsp; Ht = <b>${f(p.Ht)} m</b><br>
+   SD = <b>${f(p.SD)} m</b> &nbsp; ZA = <b>${dms2(p.ZA)}</b> &nbsp;·&nbsp; (c−r) = 0.0675·D²(km)</span></div>`;
+}
+
 /* ---- drill registry ---- */
 const DRILLS={
+ m1_gons:{module:'m1', title:'Gons → DMS Conversion', phase:'M1 · Phase A',
+   card:'Convert a gradian (gon) angle to degrees-minutes-seconds — the quiz item that is easy to leave blank when rushed. Three small steps.',
+   intro:['Decimal degrees = gons × 0.9','Pull out whole degrees, convert the rest to minutes','Convert the leftover to seconds → assemble d° m′ s″'],
+   gen:genGons, build:buildGons, givens:givensGons},
+ m2_reduce:{module:'m2', title:'Reduce a Slope Distance', phase:'M2 · Phase B',
+   card:'From a slope distance + its angle, get HD and ΔH (the Quiz Q5 skill). Three steps: fix the angle, then HD, then ΔH — both, every time.',
+   intro:['Convert ZA ↔ VA (they sum to 90°)','Horizontal distance HD = SD · sin(ZA)','Vertical distance ΔH = SD · cos(ZA), with sign'],
+   gen:genReduce, build:buildReduce, givens:givensReduce},
  m3_angles:{module:'m3', title:'Angle Balancing', phase:'M3 · Phase 1',
    card:'Balancing the angles. Tiny steps — last step first, build up to the whole thing. Fresh numbers, no clock.',
    intro:['Add up the five measured angles','Work out what they <i>should</i> total — (n−2)×180°','Find the <b>misclosure</b> (how far off)','Find the <b>correction</b> for each angle','Apply it → the balanced angle'],
@@ -1120,14 +1605,42 @@ const DRILLS={
    intro:['East misclosure eE = ΣΔE','North misclosure eN = ΣΔN','Leg correction (ΔE) = −eE × (d ⁄ Σs)','Leg correction (ΔN) = −eN × (d ⁄ Σs)','Adjusted ΔE = ΔE + correction','Adjusted ΔN = ΔN + correction'],
    credit:'The Compass / <b>Bowditch</b> Rule — after Nathaniel Bowditch, American navigator (1773–1838), borrowed by surveyors from his sea-traverse methods.',
    gen:genCompass, build:buildCompass, givens:givensCompass},
+ m3_signs:{module:'m3', title:'Signs · Errors → Corrections', phase:'Fundamentals',
+   card:'The easy-to-trip-on one: a correction is always the OPPOSITE sign of the error. Read the misclosure, flip it, apply it — across angles, eastings and levelling.',
+   intro:['Read the misclosure (a subtraction — mind the direction)','Flip the sign: correction = − error','Apply it sign-aware: value + (signed) correction'],
+   gen:genSigns, build:p=>p.steps, givens:p=>p.givens},
  m6_short:{module:'m6', title:'Short-line Elevation', phase:'M6 · Phase J',
-   card:'One trig-levelling line. Three steps: the vertical part, the height difference, the new elevation.',
-   intro:['Vertical part = SD · cos(ZA)','Height difference ΔH = Hi + SD·cos ZA − Ht','Elevation of B = Elev of A + ΔH'],
+   card:'One trig-levelling line. Reduce the slope to HD and the vertical part, then the height difference and the new elevation.',
+   intro:['Horizontal distance HD = SD · sin(ZA)','Vertical part = SD · cos(ZA)','Height difference ΔH = Hi + SD·cos ZA − Ht','Elevation of B = Elev of A + ΔH'],
    gen:genShortline, build:buildShortline, givens:givensShortline},
  m6_recip:{module:'m6', title:'Reciprocal Levelling', phase:'M6 · Phase K (A6 Q1)',
    card:'Forward + reverse sights with Hi = Ht — the A6 Q1 type. Mean the angle, mean the distance, get the elevation.',
    intro:['Mean zenith angle = (ZA_AB + 180° − ZA_BA) ⁄ 2','Mean slope distance = (SD_AB + SD_BA) ⁄ 2','Elev of B = Elev of A + SD_mean · cos(ZA_mean)'],
    gen:genRecip, build:buildRecip, givens:givensRecip},
+ m4_swing:{module:'m4', title:'Swing Angle', phase:'M4 · Phase B',
+   card:'Traverse between two known points on an assumed bearing. Find the assumed bearing, the true bearing, and the swing that rotates one onto the other.',
+   intro:['Assumed bearing = tan⁻¹(ΣΔE ⁄ ΣΔN)','True bearing = inverse of the known coordinates','Swing = assumed − true (applied to every leg)'],
+   gen:genSwing, build:buildSwing, givens:givensSwing},
+ m4_blunder:{module:'m4', title:'Find the Distance Blunder', phase:'M4 · Phase D 🔍',
+   card:'Angles are fine but the position misses badly. Find the size and bearing of the error, then spot which leg to re-measure.',
+   intro:['Size of error er = √(eE² + eN²)','Bearing of error = tan⁻¹(eE ⁄ eN)','Match it to a leg (± 180°) → the culprit'],
+   gen:genBlunder, build:buildBlunder, givens:givensBlunder},
+ m5_resection:{module:'m5', title:'Three-Point Resection', phase:'M5 · the A5 type',
+   card:'Fix the unknown hub from angles to three known points — the full eight-step chain: (A+C) → k → A, C → B1, B2 → AP, CP.',
+   intro:['(A + C) = 360° − (X + Y + B)','k = (a·sinX) ⁄ (c·sinY)','C = tan⁻¹[ sinS ⁄ (k + cosS) ]','A = (A+C) − C','B1 = 180° − (X + A)','B2 = 180° − (Y + C)','AP = c·sinB1 ⁄ sinX','CP = a·sinB2 ⁄ sinY'],
+   gen:genResection, build:buildResection, givens:givensResection},
+ m5_missing:{module:'m5', title:'Missing Bearing & Distance', phase:'M5 · Phase E',
+   card:'One line of a closed figure is unknown. Sum the known legs, close to zero, then recover the missing bearing and distance.',
+   intro:['Σ ΔE and Σ ΔN of the known legs','Missing ΔE = −ΣΔE, missing ΔN = −ΣΔN','Missing bearing = tan⁻¹(ΔE ⁄ ΔN)','Missing distance = √(ΔE² + ΔN²)'],
+   gen:genMissing, build:buildMissing, givens:givensMissing},
+ m6_loop:{module:'m6', title:'Loop Levelling Closure', phase:'M6 · Phase L',
+   card:'Close a levelling loop the same way as a traverse: misclosure → distribute by distance → adjusted ΔH → elevations.',
+   intro:['Misclosure ΣΔH (should be 0)','Σ HD','Correction = −(ΣΔH ⁄ ΣHD) × HD','Adjusted ΔH = ΔH + correction','Next elevation = start + adjusted ΔH'],
+   gen:genLoopLevel, build:buildLoopLevel, givens:givensLoopLevel},
+ m6_long:{module:'m6', title:'Long Line + Gradient', phase:'M6 · Phase M (A6 Q2)',
+   card:'Long sight: add the curvature-&-refraction correction, get the elevation, then the gradient vs the 2% limit.',
+   intro:['HD = SD · sin(ZA)','(c−r) = 0.0675 × D²(km)','ΔH = Hi + SD·cos ZA − Ht + (c−r)','Elev of B = Elev of A + ΔH','Gradient = ΔElev ⁄ HD × 100%'],
+   gen:genLong, build:buildLong, givens:givensLong},
 };
 
 let DR={def:null,p:null,steps:[],idx:0,start:0,rung:1,showHint:false,showReveal:false};

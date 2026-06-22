@@ -4,14 +4,24 @@ A small, gamified study tool for **BCIT GEOM 2120 (Pre-Entry Survey Computations
 It's a single self-contained `index.html` — no build, no dependencies, works fully
 offline. Open it in any browser (or add it to your phone's home screen).
 
+**Live:** https://kevingriffin-new.github.io/geom2120-trainer/
+
 ## What it covers
 
-- **Module 3 — Closed Traverse:** angle balancing, the closure worksheet, and the
-  Compass / **Bowditch** Rule corrections.
-- **Module 4 — Alternate Traverses & Blunders** *(quiz content; drills in progress)*.
-- **Module 5 — Missing Parts & Resection** *(quiz content; drills in progress)*.
-- **Module 6 — Trigonometric Levelling:** short-line elevations and reciprocal
-  (forward + reverse) observations.
+Modules 1–6, each with concept questions and hands-on **Step Drills**:
+
+- **Module 1 — Units & Conversions:** gons ↔ degrees ↔ radians, DMS, interior vs
+  exterior angle sums, legal/metric units.
+- **Module 2 — Angles & Distances:** vertical/zenith angles (VA = 90° − ZA), reducing
+  a slope distance to HD and ΔH, bearings (Whole Circle ↔ Quadrant).
+- **Module 3 — Closed Traverse:** angle balancing, the Compass / **Bowditch** Rule
+  corrections, sign-tracking on errors & corrections, and a guided closure walkthrough.
+- **Module 4 — Alternate Traverses & Blunders:** the swing-angle method, and locating
+  a single distance blunder.
+- **Module 5 — Missing Parts & Resection:** three-point resection, and missing
+  bearing/distance of a line.
+- **Module 6 — Trigonometric Levelling:** short-line and reciprocal elevations, loop
+  levelling closure, and long lines (curvature & refraction) with gradients.
 
 ## How it teaches
 
@@ -43,6 +53,8 @@ browser. There's no server and nothing is collected.
 
 ## Status
 
-Work in progress. Worked examples and formulas are taken from the GEOM 2120 lecture
-material; the computation engines are verified against those worked answers. Not an
-official BCIT resource.
+A practice tool, not a promise — it's a place to do reps, not exam prep. Worked
+examples and formulas come from the GEOM 2120 lecture material, and each drill's
+generator is verified against the worked answers (e.g. every generated resection's
+computed hub lands on the true point; loop corrections sum to the misclosure). Not an
+official BCIT resource, and no affiliation with the course or instructor.
