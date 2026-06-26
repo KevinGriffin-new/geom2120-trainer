@@ -216,9 +216,9 @@ const M1={
    opts:["400","360","2π","100"],a:0,why:"By definition 400 gon = one full circle = 360°."},
   {q:"A full circle contains how many radians?",
    opts:["2π","π","400","360"],a:0,why:"One full turn = 2π radians."},
-  {q:"The sum of the EXTERIOR angles of an n-sided polygon is…",
+  {q:"A surveyor's EXTERIOR angles (each = 360° − interior) of an n-sided closed traverse sum to…",
    opts:["(n + 2) × 180°","(n − 2) × 180°","n × 180°","360°"],a:0,
-   why:"Exterior: (n + 2) × 180°. (Interior is (n − 2) × 180°.)"},
+   why:"Surveyor's exterior = 360° − interior → Σ = (n + 2) × 180°. (Interior is (n − 2) × 180°.) The “360°” option is the <i>mathematician's</i> exterior angle (180° − interior), which always sums to 360° — a different convention, and the classic trap."},
   {q:"The sum of the INTERIOR angles of an n-sided polygon is…",
    opts:["(n − 2) × 180°","(n + 2) × 180°","360°","n × 90°"],a:0,
    why:"Interior: (n − 2) × 180° — the one used to balance a closed-loop traverse."},
@@ -237,8 +237,8 @@ const M1={
         why:'96.713611° × π⁄180 = <span class="formula">1.687975 rad</span>.'}),
   ()=>({q:"Convert 365.892284 gon to decimal degrees (× 0.9). 4 dp.",
         ans:365.892284*0.9,tol:0.005,unit:'°',why:'365.892284 × 0.9 = <span class="formula">329.3030°</span> (= 329°18′11″).'}),
-  ()=>({q:"Exterior angle sum of a 9-sided polygon: (n + 2) × 180°? (degrees)",
-        ans:(9+2)*180,tol:0.5,unit:'°',why:'(9 + 2) × 180° = <span class="formula">1980°</span>.'}),
+  ()=>({q:"Surveyor's exterior-angle sum for a 9-sided closed traverse (each exterior = 360° − interior): (n + 2) × 180°? (degrees)",
+        ans:(9+2)*180,tol:0.5,unit:'°',why:'(9 + 2) × 180° = <span class="formula">1980°</span>. Surveyors take each exterior angle as 360° − interior, so they total (n + 2) × 180°. (A mathematician’s exterior angle is 180° − interior — those always sum to 360°. Same polygons, different convention.)'}),
   ()=>({q:"6 chains in metres (1 chain = 20.1168 m). 3 dp.",
         ans:6*20.1168,tol:0.01,unit:' m',why:'6 × 20.1168 = <span class="formula">120.701 m</span>.'}),
  ],
@@ -681,7 +681,32 @@ function home(){
          <p>Everything from Modules 1–6 shuffled together — a mixed bag to keep you on your toes.</p></div>
        </div>
      </div>
-     <div class="footer"><span class="tag">Best streak: <b>${S.best}</b> 🔥</span></div>
+     <div class="footer"><span class="tag">Best streak: <b>${S.best}</b> 🔥</span>
+       <span style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+         <a class="link" onclick="toggleCalcKeys()">⌨ Keystroke costs: ${SHOW_CALC?'on':'off'}</a>
+         <a class="link" onclick="acknowledgements()">Acknowledgements ▸</a></span></div>
+   </div>`;
+}
+
+function acknowledgements(){
+  screen.innerHTML=`
+   <div class="card">
+     <div class="crumb"><a onclick="home()">◂ Modules</a> · Acknowledgements</div>
+     <div class="pill s">With thanks</div>
+     <p class="qtext" style="margin-top:12px">This practice tool stands on other people's work.</p>
+     <ul class="proc" style="line-height:1.7">
+       <li><b>Dr.&nbsp;Mohammad Rajabi</b> — instructor for GEOM&nbsp;2120; the course and its
+         curriculum are his.</li>
+       <li><b>Mike Wilson</b> — third-year geomatics student and teacher, who sparked the
+         whole idea by noting the worksheets were “like a sudoku.”</li>
+       <li><b>BCIT</b> — for running GEOM&nbsp;2120.</li>
+     </ul>
+     <p class="sub" style="font-style:italic;margin-top:14px">An unofficial personal study aid —
+       not affiliated with or endorsed by BCIT or the course. Any errors are my own.</p>
+     <p class="sub" style="margin-top:8px">Spot a mistake? Email
+       <a class="link" href="mailto:alight.01-serums@icloud.com?subject=GEOM%202120%20Trainer%20feedback">alight.01-serums@icloud.com</a>
+       or <a class="link" href="https://github.com/KevinGriffin-new/geom2120-trainer/issues" target="_blank" rel="noopener">open an issue on GitHub</a>.</p>
+     <div class="footer"><span></span><button class="btn primary" onclick="home()">Back ▸</button></div>
    </div>`;
 }
 
@@ -1072,7 +1097,7 @@ function revealSum(p){
 function buildABsteps(p){
   const bal=p.angs[0]+p.corr;
   return [
-   {label:'Σ measured angles', val:secToDMS(p.sumSec),
+   {label:'Σ measured angles', val:secToDMS(p.sumSec), ops:['dmsIn','hmsAdd','hmsAdd','hmsAdd','hmsAdd','dmsOut'],
     prompt:'Add the five measured angles shown above (①–⑤) together. Type the total as <b>d m s</b> (e.g. 539 59 30).',
     ans:p.sumSec/3600, tol:4/3600,
     hint:'Add the seconds first (every 60″ carries 1′), then the minutes (every 60′ carries 1°), then the degrees.',
@@ -1088,7 +1113,7 @@ function buildABsteps(p){
     prompt:'Correction for each angle = − misclosure ÷ n. You have <b>n = 5</b> angles (see givens), so divide by 5. Seconds, with sign.',
     ans:p.corr, tol:0.5, hint:'Flip the sign of the misclosure, then divide by n = 5.',
     reveal:`−(${p.misc}) ÷ 5 = <b>${sgn(p.corr)}″</b> added to every angle.`},
-   {label:'Balanced angle ①', val:secToDMS(bal),
+   {label:'Balanced angle ①', val:secToDMS(bal), ops:['dmsIn','hmsAdd','dmsOut'],
     prompt:`Apply it. Angle ① was <b>${secToDMS(p.angs[0])}</b>. Add the ${sgn(p.corr)}″ correction and give the balanced value (d m s).`,
     ans:bal/3600, tol:4/3600, hint:'Add the correction to the seconds. If they pass 60, carry 1′. (You would do this same +'+sgn(p.corr).slice(0,1)+' to all five angles.)',
     reveal:`${secToDMS(p.angs[0])} ${p.corr<0?'−':'+'} ${Math.abs(p.corr)}″ = <b>${secToDMS(bal)}</b>.`},
@@ -1241,16 +1266,16 @@ function buildReduce(p){
   const gL=p.givenZA?'ZA':'VA', gV=p.givenZA?p.ZA:p.VA;
   const oL=p.givenZA?'VA':'ZA', oV=p.givenZA?p.VA:p.ZA;
   return [
-   {label:`Convert ${gL} → ${oL}`, val:dms2signed(oV),
+   {label:`Convert ${gL} → ${oL}`, val:dms2signed(oV), ops:['dmsIn','op','enter','dmsOut'],
     prompt:`You're given ${gL} = <b>${dms2signed(gV)}</b>. Convert it: <b>${oL} = 90° − ${gL}</b>. Answer d m s (keep the + / − sign).`,
     ans:oV, tol:5/3600,
     hint:'Zenith is measured from straight up, vertical from the horizontal — they always sum to 90°. ZA over 90° ⇒ VA is negative (downhill).',
     reveal:`90° − ${dms2signed(gV)} = <b>${dms2signed(oV)}</b>.`},
-   {label:'Horizontal distance · HD', val:f(p.HD)+' m',
+   {label:'Horizontal distance · HD', val:f(p.HD)+' m', ops:['dmsIn','trig','op','enter'],
     prompt:`<b>HD = SD · sin(ZA)</b> (= SD · cos VA) = ${f(p.SD)} × sin(${dms2(p.ZA)}). Metres, 3 dp.`,
     ans:p.HD, tol:0.01, hint:'HD uses sin of the zenith angle (or cos of the vertical angle).',
     reveal:`${f(p.SD)} × sin(${dms2(p.ZA)}) = <b>${f(p.HD)} m</b>.`},
-   {label:'Vertical distance · ΔH', val:f(p.dH)+' m',
+   {label:'Vertical distance · ΔH', val:f(p.dH)+' m', ops:['dmsIn','trig','op','enter'],
     prompt:`<b>ΔH = SD · cos(ZA)</b> (= SD · sin VA) = ${f(p.SD)} × cos(${dms2(p.ZA)}). Metres, 3 dp — with sign.`,
     ans:p.dH, tol:0.01,
     hint:'ΔH uses cos of the zenith angle. ZA over 90° (VA negative) ⇒ ΔH negative (downhill).',
@@ -1643,7 +1668,70 @@ const DRILLS={
    gen:genLong, build:buildLong, givens:givensLong},
 };
 
-let DR={def:null,p:null,steps:[],idx:0,start:0,rung:1,showHint:false,showReveal:false};
+/* ---- Calculator keypress-cost model (PILOT — m2_reduce only) ----------------
+   Each value = OVERHEAD presses for one primitive op; digit entry is excluded
+   (it costs the same on every machine, so it cancels out of the comparison).
+   Draft numbers — calibrate against the real calculators, then expand columns
+   (e.g. a programmed HP-50g). A step opts in by carrying an `ops:[...]` array. */
+const CALCS=[
+  {key:'cw',    name:'Casio fx-991CW'},
+  {key:'hp35',  name:'HP-35s'},
+  {key:'hp50',  name:'HP-50g (RPN)'},
+  {key:'db48x', name:'DB48X (RPL)'},
+  {key:'wp34s', name:'WP-34S'},
+];
+const CALC_COSTS={
+  // dmsIn = key a d°m′s″ angle AND make it usable for trig.
+  //   CW:     3×(Shift +) entry, native sexagesimal after          = 6
+  //           ⚠ PIVOTAL / least-certain cell: assumes °′″ is Shift+'+' (2 each).
+  //           If the CW has a single-key °′″, this drops to 3 and the CW stops
+  //           being the slowest (legacy 50g takes that spot). Verify on machine.
+  //   HP-35s: type D.MMSSss free, one shifted →HR before trig      = 2
+  //   HP-50g: free HH.MMSS entry, HMS→ buried in TIME menu (~4)
+  //   DB48X:  inline DMS via 2 extra '.' presses, native _dms unit,
+  //           trig works directly — no convert step                = 2
+  //   WP-34S: type H.MMSS free, then H.d (f+key) → decimal before trig = 2.
+  //           Result back to DMS via f H.MS (2). Both manual-verified
+  //           (Owner's Manual 3.1, IOP p.88). Its real edge is native
+  //           H.MS+/H.MS− angle ARITHMETIC (h X.FCN) — adds DMS angles with
+  //           no decimal round-trip; shows up in m3_compass, not this drill.
+  dmsIn: {cw:6, hp35:2, hp50:4, db48x:2, wp34s:2},
+  // dmsOut = show a decimal result back in d°m′s″.
+  dmsOut:{cw:2, hp35:2, hp50:4, db48x:3, wp34s:2},
+  // hmsAdd = bring in ONE more d°m′s″ angle and add it to a running DMS total.
+  //   CW:     sexagesimal entry (6) + '+' (1) = 7 — native add, but the entry tax bites ×N.
+  //   HP-35s: fake-dec entry free + →HR (2) + '+' (1) = 3; NO native HMS+, so every angle converts.
+  //   HP-50g: free entry + HMS→ menu (~4) + '+' (1) = 5  (drops if HMS→ is on a quick/custom menu).
+  //   DB48X:  inline-DMS entry (2) + '+' (1) = 3 — _dms values add directly.
+  //   WP-34S: free entry + native H.MS+ (h X.FCN, ~3) = 3  (→ ~1 if H.MS+ is on a hotkey).
+  hmsAdd:{cw:7, hp35:3, hp50:5, db48x:3, wp34s:3},
+  trig:  {cw:1, hp35:1, hp50:1, db48x:1, wp34s:1},   // sin / cos / tan (or inverse)
+  op:    {cw:1, hp35:1, hp50:1, db48x:1, wp34s:1},   // one arithmetic operator  + − × ÷
+  enter: {cw:1, hp35:1, hp50:1, db48x:1, wp34s:1},   // = (algebraic) or Enter (RPN)
+};
+function costFor(ops,k){return ops.reduce((t,o)=>t+((CALC_COSTS[o]||{})[k]||0),0);}
+function keypressPanel(ops){
+  if(!ops||!ops.length) return '';
+  const totals=CALCS.map(c=>({name:c.name, n:costFor(ops,c.key)})).sort((a,b)=>a.n-b.n);
+  const min=totals[0].n;
+  const rows=totals.map(t=>`<tr><td>${t.name}</td>
+     <td style="text-align:right"><b>${t.n}</b>${t.n===min?' 🏆':''}</td></tr>`).join('');
+  return `<div class="kfoot" style="background:rgba(127,209,232,.10)">
+     ⌨ <b>Calculator Keystrokes</b> <span class="muted">— overhead for this step, digits excluded</span>
+     <table class="mini" style="margin-top:6px">${rows}</table>
+     <span class="muted" style="font-size:11px">ops: ${ops.join(' · ')} · draft figures, still calibrating</span></div>`;
+}
+
+// ⌨ Calculator-keystroke pilot: per-device on/off, remembered in localStorage (default ON).
+// Lets anyone hide the feature locally — handy until we know how the panel reads on phones.
+let SHOW_CALC = (function(){try{return localStorage.getItem('calcKeys')!=='off';}catch(e){return true;}})();
+function toggleCalcKeys(){
+  SHOW_CALC=!SHOW_CALC;
+  try{localStorage.setItem('calcKeys',SHOW_CALC?'on':'off');}catch(e){}
+  home();   // re-render home so the label flips
+}
+
+let DR={def:null,p:null,steps:[],idx:0,start:0,rung:1,showHint:false,showReveal:false,showCost:false};
 
 function startDrill(key){ DR.def=DRILLS[key]; clearLessonTimer(); drillIntro(); }
 function drillIntro(){
@@ -1696,9 +1784,11 @@ function renderDrill(){
      <div class="row" style="margin-top:8px">
        <button class="btn" style="width:auto" onclick="DR.showHint=true;renderKeep()">💡 Hint</button>
        <button class="btn" style="width:auto" onclick="DR.showReveal=true;renderKeep()">👁 Show me</button>
+       ${SHOW_CALC&&s.ops?`<button class="btn" style="width:auto" onclick="DR.showCost=!DR.showCost;renderKeep()">⌨ Keystrokes</button>`:''}
      </div>
      ${DR.showHint?`<div class="kfoot">💡 ${s.hint}</div>`:''}
      ${DR.showReveal?`<div class="kfoot">👁 ${s.reveal}</div>`:''}
+     ${DR.showCost&&SHOW_CALC&&s.ops?keypressPanel(s.ops):''}
      <div class="fb" id="dfb"></div>
    </div>`;
   const inp=el('dans'); inp.focus();
