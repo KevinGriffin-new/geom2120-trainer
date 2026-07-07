@@ -8,7 +8,7 @@
   :root{
     --bg:#0e1220; --panel:#171c2e; --panel2:#1f2740; --ink:#e8ecf7; --mut:#93a0c0;
     --line:#2a3350; --acc:#4ad1a4; --acc2:#5b9cff; --warn:#ffb454; --bad:#ff6b81;
-    --good:#3ddc97; --gold:#ffd166; --m1:#f6c945; --m2:#7fd1e8; --m3:#4ad1a4; --m4:#5b9cff; --m5:#c08bff; --m6:#ff9e7d;
+    --good:#3ddc97; --gold:#ffd166; --m1:#f6c945; --m2:#7fd1e8; --m3:#4ad1a4; --m4:#5b9cff; --m5:#c08bff; --m6:#ff9e7d; --m7:#9adf62; --m8:#ff8fc6;
     --r:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
@@ -71,7 +71,7 @@
   .mode h3{margin:0 0 3px;font-size:16px}
   .mode p{margin:0;color:var(--mut);font-size:13px}
   .mode .tag{font-size:11px;color:var(--mut)}
-  .m1b{border-left-color:var(--m1)} .m2b{border-left-color:var(--m2)} .m3b{border-left-color:var(--m3)} .m4b{border-left-color:var(--m4)} .m5b{border-left-color:var(--m5)} .m6b{border-left-color:var(--m6)} .allb{border-left-color:var(--gold)}
+  .m1b{border-left-color:var(--m1)} .m2b{border-left-color:var(--m2)} .m3b{border-left-color:var(--m3)} .m4b{border-left-color:var(--m4)} .m5b{border-left-color:var(--m5)} .m6b{border-left-color:var(--m6)} .m7b{border-left-color:var(--m7)} .m8b{border-left-color:var(--m8)} .allb{border-left-color:var(--gold)}
   .center{text-align:center}
   .big{font-size:40px;margin:6px 0}
   .tag{font-size:12px;color:var(--mut)}
@@ -160,7 +160,7 @@
 
 <div class="wrap">
   <div class="topbar">
-    <h1>Survey Computations Trainer <small>GEOM 2120 · Modules 1–6 · practice &amp; step drills</small></h1>
+    <h1>Survey Computations Trainer <small>GEOM 2120 · Modules 1–8 · practice &amp; step drills</small></h1>
     <div class="hud">
       <span class="chip">Lvl <b class="lv" id="hudLvl">1</b></span>
       <span class="chip">Score <b id="hudScore">0</b></span>
@@ -174,15 +174,16 @@
 
 <script>
 /* ===========================================================================
-   GEOM 2120 — Survey Computations Trainer (Modules 1–6)
-   Content grounded in the L3A/L3B, L4A/L4B, L5A/L5B lecture worked examples.
+   GEOM 2120 — Survey Computations Trainer (Modules 1–8)
+   Content grounded in the L3A/L3B, L4A/L4B, L5A/L5B, L6B and L7 lecture
+   worked examples.
    =========================================================================== */
 
 /* ---------- angle helpers ---------- */
 function dmsToDeg(d,m,s){const sign=d<0?-1:1;return sign*(Math.abs(d)+(m||0)/60+(s||0)/3600);}
 const A=(d,m,s)=>dmsToDeg(d,m,s);                 // shorthand for answer keys
 function parseDMS(str){
-  const cleaned=String(str).replace(/[°'"’”]/g,' ').trim();
+  const cleaned=String(str).replace(/,/g,'').replace(/[°'"’”]/g,' ').trim();   // strip thousands separators
   if(cleaned==='')return null;
   const p=cleaned.split(/\s+/).map(Number);
   if(p.some(isNaN))return null;
@@ -633,7 +634,222 @@ const M6={
    Loop: ΣΔH should = 0; distribute the misclosure by HD (like compass rule); gradient = ΔElev⁄HD × 100%`
 };
 
-const MODULES={m1:M1,m2:M2,m3:M3,m4:M4,m5:M5,m6:M6};
+const M7={
+ key:'m7', name:'Module 7 — Area Calculations', emo:'🏞️', cls:'m7b', colour:'var(--m7)',
+ blurb:'Area units (m², hectares, acres), simple figures, offsets from a baseline — the trapezoid & Simpson’s rules — and area by coordinates (the Sum & Difference method).',
+ procs:[
+  {title:'Area by coordinates (Sum & Difference)',list:[
+   'List the station coordinates in traverse order, repeating the FIRST station at the end',
+   'Dashed products: Σ of each E × the NEXT row’s N',
+   'Solid products: Σ of each N × the NEXT row’s E',
+   '2A = dashed sum − solid sum',
+   'Area = |2A| ⁄ 2 — no such thing as a negative area',
+   'Convert if asked: 1 ha = 10,000 m²']},
+  {title:'Offsets from a baseline (trapezoid rule)',list:[
+   'Run a baseline and measure offsets h₀ … hₙ to the irregular boundary',
+   'Record the spacing between offsets (regular b, or a, b, c… if irregular)',
+   'Irregular spacing: Area = ½{a(h₀+h₁) + b(h₁+h₂) + …}',
+   'Regular spacing: Area = b(½h₀ + h₁ + … + hₙ₋₁ + ½hₙ)']},
+  {title:'Simpson’s One-Third Rule',list:[
+   'Check you have an ODD number of ordinates',
+   'Even count? split off the first (or last) piece to do by trapezoid',
+   'Area = b⁄3 × {(first + last) + 2(remaining odds) + 4(evens)}',
+   'Add back any split-off piece',
+   'Compare with a second method as a check']},
+  {title:'Complex parcel — decompose & total (the A7 Q3 marina)',list:[
+   'Offset spacing per block: b = baseline ÷ number of intervals (offsets − 1)',
+   'Each offset block by the trapezoid rule',
+   'Each block again by Simpson’s ⅓ rule — the check',
+   'Big simple figures: trapezoids between the parallel lines',
+   'Missing distances by Pythagoras / cosine law, as the triangles need them',
+   'Corner triangles: ½ab·sinC, or Heron from three sides',
+   'Total the pieces — quote a trapezoid total AND a Simpson total']},
+ ],
+ mcq:[
+  {q:"One hectare equals…",
+   opts:["10,000 m² (100 m × 100 m)","1,000 m²","100 m²","43,560 m²"],a:0,
+   why:"1 ha = 100 m × 100 m = 10,000 m². (43,560 ft² is an ACRE — the imperial cousin.)"},
+  {q:"One acre equals…",
+   opts:["43,560 ft²","10,000 ft²","66 ft²","4,840 ft²"],a:0,
+   why:"1 acre = 43,560 ft² ≈ 0.404685 ha."},
+  {q:"To convert ft² to m² you multiply by…",
+   opts:["0.3048² = 0.09290304 (square the linear factor!)","0.3048","3.28084","10.76391"],a:0,
+   why:"Area conversions SQUARE the linear conversion: 1 ft² = 0.3048² m². (×10.76391 goes the other way, m² → ft².)"},
+  {q:"Field measurements of area are usually ____ than map/plan measurements.",
+   opts:["more accurate","less accurate","the same","never used"],a:0,
+   why:"Field distances skip the plotting-and-scaling step, so no map error is added."},
+  {q:"In plane surveying the area computed is…",
+   opts:["the orthogonal projection onto a horizontal plane","the sloping ground surface","always the map area","the perimeter × width"],a:0,
+   why:"Use HORIZONTAL distances — reduce sloping dimensions to the horizontal first."},
+  {q:"Simpson's One-Third Rule requires…",
+   opts:["an odd number of ordinates","an even number of ordinates","exactly 10 offsets","a closed traverse"],a:0,
+   why:"Odd ordinates = even strips, pairing for the parabolas. Even count? do one end piece by trapezoid and add it on."},
+  {q:"Simpson's Rule assumes the boundary between offsets is…",
+   opts:["a partial parabola","a straight line","a circular arc","vertical"],a:0,
+   why:"Parabolas through triples of offsets — which is why it beats the trapezoid rule on curved boundaries."},
+  {q:"In the coordinate (Sum & Difference) method, the coordinates of the starting point are…",
+   opts:["repeated at the end of the list","used only once","ignored","averaged with the last point"],a:0,
+   why:"The list must close back on itself — repeat the first station at the bottom before cross-multiplying."},
+  {q:"Your coordinate-method result comes out NEGATIVE. That means…",
+   opts:["you went round the figure the other way — take the absolute value","the traverse failed","a station is wrong","the area really is negative"],a:0,
+   why:"The sign only records clockwise vs counter-clockwise. There is no such thing as a negative area."},
+  {q:"The area of a circular sector is ½r²θ where θ is in…",
+   opts:["radians","degrees","gons","minutes"],a:0,
+   why:"Sector = ½r²θ and segment = ½r²(θ − sinθ) both need θ in RADIANS."},
+  {q:"Given two sides a, b and the included angle C, a triangle's area is…",
+   opts:["½ a·b·sin C","½ a·b·cos C","a·b·tan C","½(a+b)·C"],a:0,
+   why:"½ab·sinC — the included-angle formula. (Heron's √(s(s−a)(s−b)(s−c)) covers three known sides.)"},
+  {q:"A planimeter measures…",
+   opts:["the area inside any closed figure traced by its pointer","elevation differences","bearings","slope distances"],a:0,
+   why:"Trace the boundary on the plan and read the area directly — a map/plan method."},
+  {q:"Nine offsets span a 40 m baseline. The spacing b is…",
+   opts:["40 ⁄ 8 = 5 m (divide by INTERVALS = offsets − 1)","40 ⁄ 9 ≈ 4.44 m","40 ⁄ 10 = 4 m","always 10 m"],a:0,
+   why:"n offsets cut the baseline into n − 1 strips, so b = 40 ⁄ 8 = 5 m. Dividing by the offset count is the classic slip."},
+  {q:"The boundary curve runs right into the end of the baseline. The final offset is…",
+   opts:["0 — and it still counts as an ordinate","left out of the bracket","equal to the previous offset","impossible to use"],a:0,
+   why:"Where the boundary meets the baseline the offset is simply 0 (A7's block C). Keep it in the bracket — halved if it's an end ordinate."},
+ ],
+ num:[ /* L6B worked example (15,027 m²) + unit conversions + offset rules */
+  ()=>({q:"Convert 15,027 m² to hectares (1 ha = 10,000 m²). 4 dp.",
+        ans:1.5027,tol:0.0005,unit:' ha',why:'15,027 ⁄ 10,000 = <span class="formula">1.5027 ha</span>.'}),
+  ()=>({q:"A parcel is 2.400 ha. Convert to acres (1 ha ≈ 2.47105 acres). 3 dp.",
+        ans:2.4*2.47105,tol:0.01,unit:' acres',why:'2.400 × 2.47105 = <span class="formula">5.931 acres</span>.'}),
+  ()=>({q:"Convert 1500 ft² to m² (1 ft = 0.3048 m — square it!). 3 dp.",
+        ans:1500*0.09290304,tol:0.05,unit:' m²',why:'1500 × 0.3048² = 1500 × 0.09290304 = <span class="formula">139.355 m²</span>.'}),
+  ()=>({q:"Coordinate method (L6B example): E_A(N_B − N_E) = 935.049 × (1000.000 − 1154.366)? (3 dp, signed — no commas)",
+        ans:935.049*(1000-1154.366),tol:0.5,unit:' m²',
+        why:'935.049 × (−154.366) = <span class="formula">−144,339.774</span> — one row of the sum. (The lecture slide prints −144,340.774; that 1,000 m² slip cancels against a matching one in row C, so its 2A is still right.)'}),
+  ()=>({q:"The cross products give 2A = +30,053.306 m². The area, to the nearest m²?",
+        ans:15027,tol:1,unit:' m²',why:'A = 2A ⁄ 2 = <span class="formula">15,027 m²</span>.'}),
+  ()=>({q:"Regular offsets, b = 10 m: h = 2.1, 4.3, 5.1, 4.8, 2.7. Trapezoid rule b(½h₀ + h₁ + h₂ + h₃ + ½h₄)? (1 dp)",
+        ans:166.0,tol:0.5,unit:' m²',why:'10 × (1.05 + 4.3 + 5.1 + 4.8 + 1.35) = 10 × 16.6 = <span class="formula">166.0 m²</span>.'}),
+  ()=>({q:"Same five offsets by Simpson: (b⁄3)·{(h₀+h₄) + 2(h₂) + 4(h₁+h₃)} = (10⁄3)·{4.8 + 10.2 + 36.4}? (1 dp)",
+        ans:10/3*51.4,tol:0.5,unit:' m²',why:'(10⁄3) × 51.4 = <span class="formula">171.3 m²</span> — a touch more than the trapezoid rule, catching the curve.'}),
+  ()=>({q:"Triangle: a = 48.32 m, b = 56.90 m, included angle C = 62°30′. Area = ½·a·b·sinC? (1 dp)",
+        ans:0.5*48.32*56.9*Math.sin(dmsToDeg(62,30,0)*Math.PI/180),tol:0.5,unit:' m²',
+        why:'½ × 48.32 × 56.90 × sin 62°30′ ≈ <span class="formula">1219.4 m²</span>.'}),
+  ()=>({q:"Circular segment: r = 20 m, θ = 1.200 rad. Area = ½r²(θ − sinθ)? (2 dp)",
+        ans:0.5*400*(1.2-Math.sin(1.2)),tol:0.5,unit:' m²',
+        why:'200 × (1.200 − 0.93204) = <span class="formula">53.59 m²</span>.'}),
+  ()=>({q:"A7 Q1: the combined lots total 6410.5 m². In acres (1 acre = 4046.856 m²)? 3 dp.",
+        ans:6410.5/4046.856,tol:0.003,unit:' acres',
+        why:'6410.5 ⁄ 4046.856 = <span class="formula">1.584 acres</span>.'}),
+  ()=>({q:"A7 Q1 Lot B — Heron: sides 62.98, 62.47, 67.94 m, so s = 96.695. Area = √(s(s−a)(s−b)(s−c))? (nearest m²)",
+        ans:1791.191,tol:1,unit:' m²',
+        why:'√[96.695 × 33.715 × 34.225 × 28.755] = <span class="formula">1791.19 m²</span>.'}),
+  ()=>({q:"A7 Q2: points 100 (5643.8 E, 3930.6 N) and 104 (5612.3 E, 4155.1 N). Distance 100→104 = √(ΔE² + ΔN²)? (3 dp)",
+        ans:Math.hypot(5612.3-5643.8,4155.1-3930.6),tol:0.01,unit:' m',
+        why:'√[(−31.5)² + 224.5²] = <span class="formula">226.699 m</span> — the diagonal that closes the sold-off triangle.'}),
+ ],
+ formulae:`1 ha = 10,000 m² · 1 acre = 43,560 ft² = 4046.856 m² · <b>square the linear factor</b>: 1 ft² = 0.3048² m²<br>
+   Triangle: ½·base·height · ½ab·sinC · Heron √(s(s−a)(s−b)(s−c)), 2s = a+b+c<br>
+   Circle πr² · Sector ½r²θ (θ rad) · Segment ½r²(θ − sinθ)<br>
+   Offsets: b = baseline ⁄ (offsets − 1) · boundary meets baseline ⇒ that offset = 0<br>
+   Trapezoid rule (regular b): A = b(½h₀ + h₁ + … + ½hₙ)<br>
+   Simpson (ODD ordinates): A = b⁄3·{(first + last) + 2(other odds) + 4(evens)}<br>
+   Coords: repeat 1st stn · 2A = Σdashed − Σsolid · A = |2A|⁄2`
+};
+
+const M8={
+ key:'m8', name:'Module 8 — Horizontal Curves', emo:'🛣️', cls:'m8b', colour:'var(--m8)',
+ blurb:'Simple circular curves: the delta angle, tangent length, curve length and long chord; chainage of the BC and EC; deflection angles + chords to set out stations along the arc.',
+ procs:[
+  {title:'Curve elements from the tangents',list:[
+   'Δ = forward-tangent bearing − back-tangent bearing',
+   'Tangent length T = R·tan(Δ⁄2)',
+   'Chainage of BC = chainage of PI − T (back along the tangent)',
+   'Curve length L = 2πR·(Δ⁄360)',
+   'Chainage of EC = chainage of BC + L (along the ARC)',
+   'Long chord C = 2R·sin(Δ⁄2)']},
+  {title:'Deflection angles & chords for layout',list:[
+   'List the even stations between the BC and the EC',
+   'Arc length l from the BC to each station',
+   'Deflection angle δ = 90·l ⁄ (πR)',
+   'Chord from the BC = 2R·sin δ',
+   'Check: at the EC, δ = Δ⁄2 and the chord = the long chord C']},
+  {title:'Coordinates of stations around a curve',list:[
+   'Compute T from the curve data → chainage & coordinates of the BC',
+   'Deflection angle and chord from the BC to each station',
+   'Bearing to each station = tangent bearing ± deflection (left is −)',
+   'Coordinates by bearing & chord from the BC',
+   'Check the EC coordinates independently (via Δ or the curve centre)']},
+ ],
+ mcq:[
+  {q:"A COMPOUND curve is…",
+   opts:["two or more arcs, tangent, centres on the SAME side","two arcs with centres on opposite sides","a single arc between two tangents","a spiral"],a:0,
+   why:"Compound = same side (radii differ, Δ = Δ1 + Δ2). Opposite sides = a REVERSE curve. One arc = simple."},
+  {q:"The delta angle Δ of a simple curve equals…",
+   opts:["the change in bearing between the two tangents","half the deflection","the angle at the BC","90° always"],a:0,
+   why:"Δ = forward tangent bearing − back tangent bearing, and it also appears at the curve centre O."},
+  {q:"The tangent distance T is…",
+   opts:["R·tan(Δ⁄2)","R·sin(Δ⁄2)","2R·sin(Δ⁄2)","R·(Δ⁄360)"],a:0,
+   why:"T = R·tan(Δ⁄2) — PI to BC (and PI to EC). 2R·sin(Δ⁄2) is the long chord."},
+  {q:"The chainage of the BC is found by…",
+   opts:["subtracting T from the chainage of the PI","adding T to the PI","adding L to the PI","halving the PI chainage"],a:0,
+   why:"Chainage runs up the back tangent to the PI, so BC = PI − T, measured back along the tangent."},
+  {q:"The chainage of the EC equals…",
+   opts:["chainage of BC + L, along the ARC","chainage of PI + T","chainage of BC + C (the long chord)","chainage of PI + L"],a:0,
+   why:"Stationing follows the centreline — the arc — so EC = BC + L. Going via the PI (BC + T + T) is the classic trap."},
+  {q:"The total deflection angle from the BC to the EC is…",
+   opts:["Δ⁄2","Δ","2Δ","90° − Δ"],a:0,
+   why:"The deflection from the tangent to the end of the curve is half the central angle: Δ⁄2."},
+  {q:"The chord from the BC to any point on the curve equals…",
+   opts:["2R·sin(deflection angle)","R·tan(deflection)","2R·cos(deflection)","the arc length"],a:0,
+   why:"chord = 2R·sin δ, with δ the deflection angle to that point. (The long chord is the δ = Δ⁄2 case.)"},
+  {q:"Facing increasing chainage, a curve to the RIGHT has deflection angles that are…",
+   opts:["positive (clockwise)","negative","zero","always 90°"],a:0,
+   why:"Right = clockwise = (+); a curve to the left gives negative (counter-clockwise) deflections."},
+  {q:"A chainage written 1+218.256 m means…",
+   opts:["1218.256 m along the alignment — the + is pure notation","1218.256 m in a straight line from the start","1.218256 m","add 1 to 218.256"],a:0,
+   why:"The + just flags a stationing value; it is never applied mathematically. Distance is measured ALONG the alignment."},
+  {q:"The arc-definition degree of curvature D_A is the angle at the centre subtended by…",
+   opts:["a 100 m (or 100 ft) ARC","a 100 m CHORD","the long chord","the tangent"],a:0,
+   why:"Arc definition: D_A ≈ 5729.58 ⁄ R. The chord definition D_C = 2sin⁻¹(50⁄R) uses a 100-unit chord."},
+  {q:"The BC and EC are also known as…",
+   opts:["PC (Point of Curve) and PT (Point of Tangent)","PI and O","BT and FT","M and E"],a:0,
+   why:"Same points, different names: BC = PC, EC = PT. The PI is where the tangents intersect."},
+  {q:"The External (E) is the distance from…",
+   opts:["the PI to the midpoint of the curve","the curve centre to the long chord","the BC to the EC","the PI to the BC"],a:0,
+   why:"E = R(1⁄cos(Δ⁄2) − 1), PI → curve midpoint. The Mid-ordinate M = R(1 − cos(Δ⁄2)) is curve midpoint → long chord."},
+ ],
+ num:[ /* L7 worked example: R = 300 m, Δ = 71°42′12″, PI at 0+360.277 */
+  ()=>({q:"Back tangent 30°00′00″, forward tangent 101°42′12″ (turning right). Δ = ? (d m s)",
+        ans:A(71,42,12),tol:A(0,0,20),unit:'',disp:'71°42′12″',
+        why:'Δ = forward − back = 101°42′12″ − 30° = <span class="formula">71°42′12″</span>.'}),
+  ()=>({q:"R = 300.000 m, Δ = 71°42′12″. Tangent length T = R·tan(Δ⁄2)? (3 dp)",
+        ans:300*Math.tan(dmsToDeg(71,42,12)/2*Math.PI/180),tol:0.05,unit:' m',
+        why:'300 × tan 35°51′06″ = <span class="formula">216.778 m</span>.'}),
+  ()=>({q:"The PI sits at chainage 360.277 m and T = 216.778 m. Chainage of the BC? (metres, 3 dp)",
+        ans:143.499,tol:0.01,unit:' m',why:'360.277 − 216.778 = <span class="formula">143.499 → 0+143.499</span>.'}),
+  ()=>({q:"R = 300 m, Δ = 71°42′12″. Curve length L = 2πR(Δ⁄360)? (3 dp)",
+        ans:2*Math.PI*300*dmsToDeg(71,42,12)/360,tol:0.05,unit:' m',
+        why:'2π × 300 × (71.70333° ⁄ 360) = <span class="formula">375.438 m</span>.'}),
+  ()=>({q:"BC = 0+143.499 and L = 375.438 m. Chainage of the EC? (metres, 3 dp)",
+        ans:518.937,tol:0.02,unit:' m',
+        why:'143.499 + 375.438 = <span class="formula">518.937 → 0+518.937</span> — along the ARC, not via the PI.'}),
+  ()=>({q:"BC = 0+143.499; the first even 100 m station is 0+200. Arc length l to it? (3 dp)",
+        ans:56.501,tol:0.01,unit:' m',why:'200 − 143.499 = <span class="formula">56.501 m</span>.'}),
+  ()=>({q:"l = 56.501 m, R = 300 m. Deflection angle δ = 90·l ⁄ (πR)? (d m s)",
+        ans:90*56.501/(Math.PI*300),tol:A(0,0,20),unit:'',disp:'5°23′44″',
+        why:'90 × 56.501 ⁄ (π × 300) = 5.39561° = <span class="formula">5°23′44″</span>.'}),
+  ()=>({q:"δ = 5°23′44″, R = 300 m. Chord from the BC = 2R·sin δ? (3 dp)",
+        ans:2*300*Math.sin(dmsToDeg(5,23,44)*Math.PI/180),tol:0.05,unit:' m',
+        why:'600 × sin 5°23′44″ = <span class="formula">56.418 m</span> — a whisker under the 56.501 m arc.'}),
+  ()=>({q:"Arc-definition degree of curvature for R = 300 m: D_A ≈ 5729.58 ⁄ R? (4 dp degrees)",
+        ans:5729.58/300,tol:0.01,unit:'°',why:'5729.58 ⁄ 300 = <span class="formula">19.0986°</span>.'}),
+  ()=>({q:"Δ = 71°42′12″. Total deflection at the EC = Δ⁄2? (d m s)",
+        ans:A(35,51,6),tol:A(0,0,20),unit:'',disp:'35°51′06″',
+        why:'Δ⁄2 = <span class="formula">35°51′06″</span> — the check value for the whole layout table.'}),
+ ],
+ formulae:`Δ = forward tangent brg − back tangent brg (= central angle at O)<br>
+   T = R·tan(Δ⁄2) · Long chord C = 2R·sin(Δ⁄2) · L = 2πR(Δ⁄360)<br>
+   E = R(1⁄cos(Δ⁄2) − 1) · M = R(1 − cos(Δ⁄2)) · Sector = πR²(Δ⁄360)<br>
+   Chainage: BC = PI − T (back along tangent) · EC = BC + L (along the arc)<br>
+   Deflection of arc l: δ = 90·l⁄(πR) · chord = 2R·sinδ · at the EC δ = Δ⁄2<br>
+   Right curve (+), left (−) · D_A ≈ 5729.58⁄R · D_C = 2sin⁻¹(50⁄R)`
+};
+
+const MODULES={m1:M1,m2:M2,m3:M3,m4:M4,m5:M5,m6:M6,m7:M7,m8:M8};
 
 /* ---------- game state ---------- */
 const S={score:0,streak:0,best:Number(localStorage.gx_best||0),lives:3,xp:0,lvl:1,combo:1};
@@ -642,7 +858,7 @@ const el=id=>document.getElementById(id);
 const screen=el('screen');
 let CUR='all';                    // current module key, or 'all'
 
-function curMods(){return CUR==='all'?[M3,M4,M5]:[MODULES[CUR]];}
+function curMods(){return CUR==='all'?Object.values(MODULES):[MODULES[CUR]];}
 function curName(){return CUR==='all'?'Final Prep · all modules':MODULES[CUR].name;}
 
 function syncHUD(){
@@ -674,11 +890,11 @@ function home(){
      <p class="qtext" style="margin-top:12px">What do you want to drill?</p>
      <p class="sub">Each module has the same three game types — learn the order, spot the formula, and work the real numbers from your lecture examples.</p>
      <div class="modegrid">
-       ${cardFor(M1)}${cardFor(M2)}${cardFor(M3)}${cardFor(M4)}${cardFor(M5)}${cardFor(M6)}
+       ${cardFor(M1)}${cardFor(M2)}${cardFor(M3)}${cardFor(M4)}${cardFor(M5)}${cardFor(M6)}${cardFor(M7)}${cardFor(M8)}
        <div class="card mode allb" onclick="modeMenu('all')">
          <div class="emo">🎓</div>
          <div><h3>Final Prep — All Modules Mixed</h3>
-         <p>Everything from Modules 1–6 shuffled together — a mixed bag to keep you on your toes.</p></div>
+         <p>Everything from Modules 1–8 shuffled together — a mixed bag to keep you on your toes.</p></div>
        </div>
      </div>
      <div class="footer"><span class="tag">Best streak: <b>${S.best}</b> 🔥</span>
@@ -1611,6 +1827,286 @@ function givensLong(p){const f=x=>x.toFixed(3);
    SD = <b>${f(p.SD)} m</b> &nbsp; ZA = <b>${dms2(p.ZA)}</b> &nbsp;·&nbsp; (c−r) = 0.0675·D²(km)</span></div>`;
 }
 
+/* ---- Module 7 drills: areas ---- */
+/* M7 · area by coordinates (Sum & Difference cross-multiplication) */
+function genCoordArea(){
+  for(;;){
+    const E0=200+Math.random()*200, N0=200+Math.random()*200;
+    let angs=[]; for(let i=0;i<4;i++)angs.push(Math.random()*360);
+    angs.sort((a,b)=>a-b);
+    let ok=true;
+    for(let i=0;i<4;i++){const gap=(angs[(i+1)%4]-angs[i]+360)%360;if(gap<45)ok=false;}
+    if(!ok)continue;
+    const pts=angs.map(a=>{const d=60+Math.random()*120;
+      return {E:r3(E0+d*Math.sin(a*RAD)),N:r3(N0+d*Math.cos(a*RAD))};});
+    let dashed=0,solid=0;
+    for(let i=0;i<4;i++){const j=(i+1)%4;dashed+=pts[i].E*pts[j].N;solid+=pts[i].N*pts[j].E;}
+    const twoA=dashed-solid, area=Math.abs(twoA)/2, ha=area/10000;
+    if(area<4000)continue;
+    return {pts,dashed,solid,twoA,area,ha};
+  }
+}
+function buildCoordArea(p){const f=x=>x.toFixed(3);return [
+  {label:'Sum of DASHED products · Σ(E × next N)', val:f(p.dashed)+' m²',
+   prompt:`Cross-multiply down the list: each station's <b>E × the NEXT station's N</b> (the last row uses station 1's N — that's why it is repeated). Add the four products. (3 dp — type it without commas.)`,
+   ans:p.dashed, tol:0.5,
+   hint:'E₁×N₂ + E₂×N₃ + E₃×N₄ + E₄×N₁. Work down the list in one calculator chain.',
+   reveal:`${p.pts.map((q,i)=>{const j=(i+1)%4;return f(q.E)+'×'+f(p.pts[j].N);}).join(' + ')} = <b>${f(p.dashed)} m²</b>.`},
+  {label:'Sum of SOLID products · Σ(N × next E)', val:f(p.solid)+' m²',
+   prompt:`Now the other diagonal: each station's <b>N × the NEXT station's E</b>. Add the four products. (3 dp, no commas.)`,
+   ans:p.solid, tol:0.5,
+   hint:'N₁×E₂ + N₂×E₃ + N₃×E₄ + N₄×E₁ — same walk down the list, other diagonal.',
+   reveal:`${p.pts.map((q,i)=>{const j=(i+1)%4;return f(q.N)+'×'+f(p.pts[j].E);}).join(' + ')} = <b>${f(p.solid)} m²</b>.`},
+  {label:'2A = dashed − solid', val:f(p.twoA)+' m²',
+   prompt:`Twice the area: <b>2A = Σdashed − Σsolid</b> = ${f(p.dashed)} − ${f(p.solid)}. (3 dp, keep the sign.)`,
+   ans:p.twoA, tol:0.8,
+   hint:'Just subtract. A negative result only means you walked the figure the other way round.',
+   reveal:`${f(p.dashed)} − ${f(p.solid)} = <b>${f(p.twoA)} m²</b>.`},
+  {label:'Area = |2A| ⁄ 2', val:f(p.area)+' m²',
+   prompt:`Halve it and drop any minus sign — there is no such thing as a negative area. (3 dp)`,
+   ans:p.area, tol:0.5,
+   hint:'Absolute value, divided by 2.',
+   reveal:`|${f(p.twoA)}| ⁄ 2 = <b>${f(p.area)} m²</b>.`},
+  {label:'Convert to hectares', val:(p.ha).toFixed(4)+' ha',
+   prompt:`Report it in hectares: <b>1 ha = 10,000 m²</b>. (4 dp)`,
+   ans:p.ha, tol:0.0002,
+   hint:'Divide the m² by 10,000.',
+   reveal:`${f(p.area)} ⁄ 10,000 = <b>${p.ha.toFixed(4)} ha</b>.`},
+]; }
+function givensCoordArea(p){const f=x=>x.toFixed(3);
+  const rows=p.pts.map((q,i)=>`<tr><td>${i+1}</td><td style="text-align:right">${f(q.E)}</td><td style="text-align:right">${f(q.N)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(154,223,98,.12)">
+   <b>What you're given</b> — adjusted coordinates of a 4-station closed traverse, with
+   <b>station 1 repeated at the end</b> (the list must close on itself):
+   <table class="mini" style="margin-top:6px"><tr><th>Stn</th><th>Easting (m)</th><th>Northing (m)</th></tr>${rows}
+   <tr><td>1 ↩</td><td style="text-align:right">${f(p.pts[0].E)}</td><td style="text-align:right">${f(p.pts[0].N)}</td></tr></table></div>`;
+}
+
+/* M7 · offsets from a baseline: trapezoid rule vs Simpson's one-third rule */
+function genOffsets(){
+  const b=pick([5,10,15,20]), base=b*6;
+  const hs=[]; for(let i=0;i<7;i++)hs.push(Math.round((2+Math.random()*10)*100)/100);
+  const trapBracket=r3(hs[0]/2+hs[6]/2+hs[1]+hs[2]+hs[3]+hs[4]+hs[5]);
+  const trap=r3(b*trapBracket);
+  const ends=r3(hs[0]+hs[6]), odds=r3(hs[2]+hs[4]), evens=r3(hs[1]+hs[3]+hs[5]);
+  const simpBracket=r3(ends+2*odds+4*evens);
+  const simpson=r3(b/3*simpBracket);
+  return {b,base,hs,trapBracket,trap,ends,odds,evens,simpBracket,simpson};
+}
+function buildOffsets(p){const f2=x=>x.toFixed(2);return [
+  {label:'Offset spacing · b = baseline ⁄ intervals', val:p.b+' m',
+   prompt:`Seven offsets stand on the ${p.base} m baseline, cutting it into <b>6 equal strips</b>. The spacing <b>b = ${p.base} ⁄ 6</b>. Metres.`,
+   ans:p.b, tol:0.01,
+   hint:'Divide by the number of INTERVALS — offsets − 1 = 6 — not by the number of offsets. (A7 pattern: b = baseline 2-3 ÷ 6.)',
+   reveal:`${p.base} ⁄ 6 = <b>${p.b} m</b>.`},
+  {label:'Trapezoid bracket · ½h₁ + h₂…h₆ + ½h₇', val:p.trapBracket.toFixed(2)+' m',
+   prompt:`Regular spacing, so the trapezoid rule collapses to one bracket: <b>½h₁ + h₂ + h₃ + h₄ + h₅ + h₆ + ½h₇</b>. Add it up. (2 dp)`,
+   ans:p.trapBracket, tol:0.02,
+   hint:'Halve ONLY the two end offsets; every interior offset counts once.',
+   reveal:`${f2(p.hs[0])}⁄2 + ${p.hs.slice(1,6).map(f2).join(' + ')} + ${f2(p.hs[6])}⁄2 = <b>${p.trapBracket.toFixed(2)} m</b>.`},
+  {label:'Trapezoid area = b × bracket', val:p.trap.toFixed(2)+' m²',
+   prompt:`Multiply by the spacing: <b>A = b × bracket</b> = ${p.b} × ${p.trapBracket.toFixed(2)}. (2 dp)`,
+   ans:p.trap, tol:0.15,
+   hint:'One multiplication — the spacing times your bracket.',
+   reveal:`${p.b} × ${p.trapBracket.toFixed(2)} = <b>${p.trap.toFixed(2)} m²</b>.`},
+  {label:'Simpson bracket · (first+last) + 2(odds) + 4(evens)', val:p.simpBracket.toFixed(2)+' m',
+   prompt:`Seven ordinates — odd count, so Simpson works directly: <b>(h₁+h₇) + 2(h₃+h₅) + 4(h₂+h₄+h₆)</b>. (2 dp)`,
+   ans:p.simpBracket, tol:0.05,
+   hint:'Ends once, the other odd-numbered ordinates ×2, the even-numbered ones ×4.',
+   reveal:`(${f2(p.hs[0])}+${f2(p.hs[6])}) + 2(${f2(p.hs[2])}+${f2(p.hs[4])}) + 4(${f2(p.hs[1])}+${f2(p.hs[3])}+${f2(p.hs[5])}) = <b>${p.simpBracket.toFixed(2)} m</b>.`},
+  {label:'Simpson area = (b⁄3) × bracket', val:p.simpson.toFixed(2)+' m²',
+   prompt:`Finish it: <b>A = (b⁄3) × bracket</b> = (${p.b}⁄3) × ${p.simpBracket.toFixed(2)}. (2 dp) — then compare with the trapezoid answer as your check.`,
+   ans:p.simpson, tol:0.15,
+   hint:'b divided by 3, times the bracket. On a curved boundary this is the better answer.',
+   reveal:`(${p.b}⁄3) × ${p.simpBracket.toFixed(2)} = <b>${p.simpson.toFixed(2)} m²</b> &nbsp;(trapezoid gave ${p.trap.toFixed(2)} m²).`},
+]; }
+function givensOffsets(p){const f2=x=>x.toFixed(2);
+  const rows=p.hs.map((h,i)=>`<tr><td>h${['₁','₂','₃','₄','₅','₆','₇'][i]}</td><td style="text-align:right">${f2(h)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(154,223,98,.12)">
+   <b>What you're given</b> — 7 offsets from a straight baseline of <b>${p.base} m</b> to an
+   irregular boundary, <b>regularly spaced</b> along it:
+   <table class="mini" style="margin-top:6px"><tr><th>Offset</th><th>Length (m)</th></tr>${rows}</table></div>`;
+}
+
+/* M7 · subdivision: parcel by coordinates minus a Heron triangle (the A7 Q2 chain) */
+function genSubdivide(){
+  for(;;){
+    const cE=5000+Math.random()*800, cN=3800+Math.random()*800;
+    let angs=[]; for(let i=0;i<5;i++)angs.push(Math.random()*360);
+    angs.sort((a,b)=>a-b);
+    let ok=true;
+    for(let i=0;i<5;i++){const gap=(angs[(i+1)%5]-angs[i]+360)%360;if(gap<30||gap>110)ok=false;}
+    if(!ok)continue;
+    const pts=angs.map(a=>{const d=150+Math.random()*100;
+      return {E:r3(cE+d*Math.sin(a*RAD)),N:r3(cN+d*Math.cos(a*RAD))};});
+    let dsh=0,sld=0;
+    for(let i=0;i<5;i++){const j=(i+1)%5;dsh+=pts[i].E*pts[j].N;sld+=pts[i].N*pts[j].E;}
+    const comb=Math.round(Math.abs(dsh-sld)/2*100)/100;
+    const P=pts[0],Q=pts[4];                                 // stations 100 & 104 — the closing edge
+    const diag=Math.hypot(Q.E-P.E,Q.N-P.N);
+    const mx=(P.E+Q.E)/2,my=(P.N+Q.N)/2;
+    let ux=(Q.N-P.N)/diag, uy=-(Q.E-P.E)/diag;               // unit normal to the edge
+    if((mx-cE)*ux+(my-cN)*uy<0){ux=-ux;uy=-uy;}              // point it AWAY from the parcel
+    const off=40+Math.random()*90, slide=(Math.random()-0.5)*0.5*diag;
+    const X={E:mx+ux*off+(Q.E-P.E)/diag*slide, N:my+uy*off+(Q.N-P.N)/diag*slide};
+    const d1=r3(Math.hypot(X.E-P.E,X.N-P.N)), d2=r3(Math.hypot(X.E-Q.E,X.N-Q.N));
+    const s=(diag+d1+d2)/2;
+    const tri=Math.sqrt(s*(s-diag)*(s-d1)*(s-d2));
+    if(!(tri>800)||tri>comb*0.35)continue;
+    const lotA=comb-tri, ha=lotA/10000;
+    return {pts,comb,P,Q,X,diag,d1,d2,s,tri,lotA,ha};
+  }
+}
+function buildSubdivide(p){const f=x=>x.toFixed(3), f2=x=>x.toFixed(2);return [
+  {label:'Diagonal 100→104 by inverse', val:f(p.diag)+' m',
+   prompt:`The sold triangle 100-104-105 needs its third side — the diagonal between stations <b>100</b> and <b>104</b>: <b>d = √(ΔE² + ΔN²)</b>. Metres, 3 dp.`,
+   ans:p.diag, tol:0.01,
+   hint:'ΔE = E₁₀₄ − E₁₀₀, ΔN = N₁₀₄ − N₁₀₀, then the hypotenuse.',
+   reveal:`√[(${f(p.Q.E-p.P.E)})² + (${f(p.Q.N-p.P.N)})²] = <b>${f(p.diag)} m</b>.`},
+  {label:'Half-perimeter · s = (a+b+c) ⁄ 2', val:f(p.s)+' m',
+   prompt:`Three sides known — Heron next. First <b>s = (${f(p.diag)} + ${f(p.d1)} + ${f(p.d2)}) ⁄ 2</b>. Metres, 3 dp.`,
+   ans:p.s, tol:0.01,
+   hint:'Add the diagonal and the two measured distances, halve the lot.',
+   reveal:`(${f(p.diag)} + ${f(p.d1)} + ${f(p.d2)}) ⁄ 2 = <b>${f(p.s)} m</b>.`},
+  {label:'Sold triangle by Heron', val:f2(p.tri)+' m²',
+   prompt:`<b>Area = √[s(s−a)(s−b)(s−c)]</b> with your s and the three sides. m², 2 dp.`,
+   ans:p.tri, tol:1,
+   hint:'Keep every (s − side) positive — if one goes negative, a side or s is off.',
+   reveal:`√[${f(p.s)} × ${f(p.s-p.diag)} × ${f(p.s-p.d1)} × ${f(p.s-p.d2)}] = <b>${f2(p.tri)} m²</b>.`},
+  {label:'Lot A after subdivision', val:f2(p.lotA)+' m²',
+   prompt:`The combined parcel was <b>${f2(p.comb)} m²</b> (by coordinates). Selling the triangle leaves <b>Lot A = combined − triangle</b>. m², 2 dp.`,
+   ans:p.lotA, tol:1.2,
+   hint:'A straight subtraction — the sold piece comes off the coordinate-method total.',
+   reveal:`${f2(p.comb)} − ${f2(p.tri)} = <b>${f2(p.lotA)} m²</b>.`},
+  {label:'Report in hectares (4 dp)', val:p.ha.toFixed(4)+' ha',
+   prompt:`A7 wants it in <b>hectares to 4 decimal places</b>: divide by 10,000.`,
+   ans:p.ha, tol:0.00025,
+   hint:'1 ha = 10,000 m². Four decimals of a hectare is one whole m² — precision matters.',
+   reveal:`${f2(p.lotA)} ⁄ 10,000 = <b>${p.ha.toFixed(4)} ha</b>.`},
+]; }
+function givensSubdivide(p){const f=x=>x.toFixed(3), f2=x=>x.toFixed(2);
+  const names=[100,101,102,103,104];
+  const rows=p.pts.map((q,i)=>`<tr><td>${names[i]}</td><td style="text-align:right">${f(q.E)}</td><td style="text-align:right">${f(q.N)}</td></tr>`).join('');
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(154,223,98,.12)">
+   <b>What you're given</b> — parcel 100-101-102-103-104; a triangle <b>100-104-105</b> is being sold off:
+   <table class="mini" style="margin-top:6px"><tr><th>Point</th><th>Easting (m)</th><th>Northing (m)</th></tr>${rows}</table>
+   <span style="line-height:1.9">Combined area (by coordinates) = <b>${f2(p.comb)} m²</b><br>
+   Measured: 100→105 = <b>${f(p.d1)} m</b> &nbsp;·&nbsp; 104→105 = <b>${f(p.d2)} m</b></span></div>`;
+}
+
+/* ---- Module 8 drills: horizontal curves ---- */
+const fmtCh=ch=>`${Math.floor(ch/1000)}+${(ch-Math.floor(ch/1000)*1000).toFixed(3).padStart(7,'0')}`;
+/* M8 · curve elements + BC/EC chainage (the L7 example chain) */
+function genCurve(){
+  const R=pick([150,200,250,300,350,400,500]);
+  const delta=((20*3600)+Math.floor(Math.random()*(70*3600)))/3600;          // Δ 20–90°, whole sec
+  const back=Math.floor(Math.random()*360*3600)/3600;
+  const fwd=r3((back+delta)%360);
+  const chPI=r3(800+Math.random()*1500);
+  const T=R*Math.tan(delta/2*RAD);
+  const chBC=chPI-T;
+  const L=2*Math.PI*R*delta/360;
+  const chEC=chBC+L;
+  const C=2*R*Math.sin(delta/2*RAD);
+  return {R,delta,back,fwd,chPI,T,chBC,L,chEC,C};
+}
+function buildCurve(p){const f=x=>x.toFixed(3);return [
+  {label:'Delta angle · Δ = forward − back', val:dms2(p.delta),
+   prompt:`The road turns right at the PI. <b>Δ = forward-tangent bearing − back-tangent bearing</b> = ${dms2(p.fwd)} − ${dms2(p.back)} (add 360° if it comes out negative). Answer d m s.`,
+   ans:p.delta, tol:3/3600,
+   hint:'Subtract the incoming bearing from the outgoing one — the change of direction IS the delta angle.',
+   reveal:`${dms2(p.fwd)} − ${dms2(p.back)} = <b>${dms2(p.delta)}</b>.`},
+  {label:'Tangent length · T = R·tan(Δ⁄2)', val:f(p.T)+' m',
+   prompt:`<b>T = R · tan(Δ⁄2)</b> = ${p.R} × tan(${dms2(p.delta/2)}). Metres, 3 dp.`,
+   ans:p.T, tol:0.01,
+   hint:'Half the delta angle, tan, times the radius — the PI→BC (and PI→EC) distance.',
+   reveal:`${p.R} × tan ${dms2(p.delta/2)} = <b>${f(p.T)} m</b>.`},
+  {label:'Chainage of BC = chainage of PI − T', val:fmtCh(p.chBC),
+   prompt:`The PI is at chainage <b>${fmtCh(p.chPI)}</b> m. Step BACK along the tangent: chainage of BC = ${f(p.chPI)} − ${f(p.T)}. Answer in metres (e.g. 143.499).`,
+   ans:p.chBC, tol:0.02,
+   hint:'Chainage runs up the back tangent to the PI, so the BC sits T metres before it.',
+   reveal:`${f(p.chPI)} − ${f(p.T)} = <b>${f(p.chBC)} m → ${fmtCh(p.chBC)}</b>.`},
+  {label:'Curve length · L = 2πR(Δ⁄360)', val:f(p.L)+' m',
+   prompt:`<b>L = 2πR × (Δ⁄360)</b> = 2π × ${p.R} × (${(p.delta).toFixed(6)}° ⁄ 360). Metres, 3 dp. (Δ in DECIMAL degrees here.)`,
+   ans:p.L, tol:0.02,
+   hint:'The curve is Δ⁄360 of a full circle of circumference 2πR. Convert Δ to decimal degrees first.',
+   reveal:`2π × ${p.R} × ${(p.delta/360).toFixed(6)} = <b>${f(p.L)} m</b>.`},
+  {label:'Chainage of EC = chainage of BC + L', val:fmtCh(p.chEC),
+   prompt:`Stationing follows the ARC: chainage of EC = ${f(p.chBC)} + ${f(p.L)}. Answer in metres.`,
+   ans:p.chEC, tol:0.03,
+   hint:'Add the curve length to the BC chainage — never go via the PI (that path is longer).',
+   reveal:`${f(p.chBC)} + ${f(p.L)} = <b>${f(p.chEC)} m → ${fmtCh(p.chEC)}</b>.`},
+  {label:'Long chord · C = 2R·sin(Δ⁄2)', val:f(p.C)+' m',
+   prompt:`Last element — the straight line BC→EC: <b>C = 2R · sin(Δ⁄2)</b> = 2 × ${p.R} × sin(${dms2(p.delta/2)}). Metres, 3 dp.`,
+   ans:p.C, tol:0.02,
+   hint:'Twice the radius times sin of half the delta. Always shorter than the arc L.',
+   reveal:`2 × ${p.R} × sin ${dms2(p.delta/2)} = <b>${f(p.C)} m</b> (arc was ${f(p.L)} m).`},
+]; }
+function givensCurve(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,143,198,.12)">
+   <b>What you're given</b> — a simple circular curve smooths a right-hand corner at the PI:<br>
+   <span style="line-height:1.9">Back tangent bearing = <b>${dms2(p.back)}</b> &nbsp;·&nbsp; Forward tangent bearing = <b>${dms2(p.fwd)}</b><br>
+   Radius R = <b>${p.R} m</b> &nbsp;·&nbsp; Chainage of PI = <b>${fmtCh(p.chPI)}</b> (${f(p.chPI)} m)</span></div>`;
+}
+
+/* M8 · deflection angle + chord to an even station */
+function genDefl(){
+  for(;;){
+    const R=pick([150,200,250,300,350,400]);
+    const delta=((25*3600)+Math.floor(Math.random()*(60*3600)))/3600;        // Δ 25–85°
+    const tang=Math.floor(Math.random()*360*3600)/3600;
+    const chBC=r3(150+Math.random()*800);
+    const L=2*Math.PI*R*delta/360;
+    const interval=pick([50,100]);
+    const first=Math.ceil(chBC/interval)*interval;
+    if(first>=chBC+L-5||first-chBC<2) continue;      // even station must land on the curve
+    const l=first-chBC;
+    const defl=90*l/(Math.PI*R);
+    const chord=2*R*Math.sin(defl*RAD);
+    const brg=(tang+defl)%360;
+    return {R,delta,tang,chBC,L,interval,first,l,defl,chord,brg,deflEC:delta/2};
+  }
+}
+function buildDefl(p){const f=x=>x.toFixed(3);return [
+  {label:`First even ${p.interval} m station after the BC`, val:fmtCh(p.first),
+   prompt:`The BC sits at <b>${fmtCh(p.chBC)}</b>. Stakes go in at every even ${p.interval} m of chainage — what is the FIRST one on the curve? Answer in metres (e.g. ${p.interval===50?'350':'200'}).`,
+   ans:p.first, tol:0.01,
+   hint:`Round the BC chainage UP to the next multiple of ${p.interval}.`,
+   reveal:`Next multiple of ${p.interval} after ${f(p.chBC)} = <b>${f(p.first)} m → ${fmtCh(p.first)}</b>.`},
+  {label:'Arc length from the BC · l', val:f(p.l)+' m',
+   prompt:`Deflections need the ARC run from the BC: <b>l = station − chainage of BC</b> = ${f(p.first)} − ${f(p.chBC)}. Metres, 3 dp.`,
+   ans:p.l, tol:0.01,
+   hint:'A simple subtraction — chainage is measured along the alignment, so this difference IS the arc.',
+   reveal:`${f(p.first)} − ${f(p.chBC)} = <b>${f(p.l)} m</b>.`},
+  {label:'Deflection angle · δ = 90·l ⁄ (πR)', val:dms2(p.defl),
+   prompt:`<b>δ = 90 × l ⁄ (π × R)</b> = 90 × ${f(p.l)} ⁄ (π × ${p.R}) — half the central angle the arc subtends. Answer d m s.`,
+   ans:p.defl, tol:3/3600,
+   hint:'The deflection from the tangent is HALF the angle at the centre: (l⁄R in degrees) ⁄ 2 = 90l⁄πR.',
+   reveal:`90 × ${f(p.l)} ⁄ (π × ${p.R}) = ${p.defl.toFixed(6)}° = <b>${dms2(p.defl)}</b>.`},
+  {label:'Chord from the BC · c = 2R·sin δ', val:f(p.chord)+' m',
+   prompt:`The tape distance to pull from the BC: <b>c = 2R · sin δ</b> = 2 × ${p.R} × sin(${dms2(p.defl)}). Metres, 3 dp.`,
+   ans:p.chord, tol:0.01,
+   hint:'Any chord = 2R sin(its deflection angle). Slightly shorter than the arc.',
+   reveal:`2 × ${p.R} × sin ${dms2(p.defl)} = <b>${f(p.chord)} m</b>.`},
+  {label:'Bearing BC → station', val:dms2(p.brg),
+   prompt:`The curve turns RIGHT, so add the deflection to the tangent bearing: <b>brg = ${dms2(p.tang)} + ${dms2(p.defl)}</b> (mod 360°). Answer d m s.`,
+   ans:p.brg, tol:3/3600,
+   hint:'Right curve ⇒ deflection is positive (clockwise). A LEFT curve would subtract it.',
+   reveal:`${dms2(p.tang)} + ${dms2(p.defl)} = <b>${dms2(p.brg)}</b>.`},
+  {label:'Check · deflection at the EC = Δ⁄2', val:dms2(p.deflEC),
+   prompt:`Sanity check for the whole table: the deflection to the EC must equal <b>Δ⁄2</b> = ${dms2(p.delta)} ⁄ 2. Answer d m s.`,
+   ans:p.deflEC, tol:2/3600,
+   hint:'Half the delta angle — if the last row of your layout table shows anything else, something slipped.',
+   reveal:`${dms2(p.delta)} ⁄ 2 = <b>${dms2(p.deflEC)}</b> (and its chord would be the long chord C).`},
+]; }
+function givensDefl(p){const f=x=>x.toFixed(3);
+  return `<div class="kfoot" style="margin:0 0 12px;background:rgba(255,143,198,.12)">
+   <b>What you're given</b> — setting out a right-hand curve by deflection angles from the BC:<br>
+   <span style="line-height:1.9">R = <b>${p.R} m</b> &nbsp;·&nbsp; Δ = <b>${dms2(p.delta)}</b> &nbsp;·&nbsp; curve length L = <b>${f(p.L)} m</b><br>
+   Chainage of BC = <b>${fmtCh(p.chBC)}</b> (${f(p.chBC)} m) &nbsp;·&nbsp; tangent bearing at the BC = <b>${dms2(p.tang)}</b><br>
+   Stakes at every even <b>${p.interval} m</b> of chainage</span></div>`;
+}
+
 /* ---- drill registry ---- */
 const DRILLS={
  m1_gons:{module:'m1', title:'Gons → DMS Conversion', phase:'M1 · Phase A',
@@ -1666,6 +2162,28 @@ const DRILLS={
    card:'Long sight: add the curvature-&-refraction correction, get the elevation, then the gradient vs the 2% limit.',
    intro:['HD = SD · sin(ZA)','(c−r) = 0.0675 × D²(km)','ΔH = Hi + SD·cos ZA − Ht + (c−r)','Elev of B = Elev of A + ΔH','Gradient = ΔElev ⁄ HD × 100%'],
    gen:genLong, build:buildLong, givens:givensLong},
+ m7_coordarea:{module:'m7', title:'Area by Coordinates', phase:'M7 · Phase A',
+   card:'The Sum & Difference method: cross-multiply down the coordinate list (first station repeated), take the difference, halve it, convert to hectares.',
+   intro:['Dashed products: Σ of each E × the next N','Solid products: Σ of each N × the next E','2A = dashed − solid','Area = |2A| ⁄ 2','Convert: 1 ha = 10,000 m²'],
+   gen:genCoordArea, build:buildCoordArea, givens:givensCoordArea},
+ m7_offsets:{module:'m7', title:'Offsets · Trapezoid vs Simpson', phase:'M7 · Phase B (A7 Q3)',
+   card:'Seven regular offsets on a baseline. Derive the spacing, get the area by the trapezoid rule, then again by Simpson’s one-third rule — two answers, one check.',
+   intro:['Spacing b = baseline ÷ intervals (offsets − 1)','Trapezoid bracket: ½h₁ + h₂…h₆ + ½h₇','Trapezoid area = b × bracket','Simpson bracket: (first+last) + 2(odds) + 4(evens)','Simpson area = (b⁄3) × bracket'],
+   credit:'Simpson’s One-Third Rule — after Thomas Simpson (1710–1761), self-taught English mathematician; it fits parabolas through the offsets instead of straight lines.',
+   gen:genOffsets, build:buildOffsets, givens:givensOffsets},
+ m7_subdivide:{module:'m7', title:'Subdivide a Lot', phase:'M7 · the A7 Q2 type',
+   card:'A parcel computed by coordinates has a triangular corner sold off. Inverse the diagonal, Heron the triangle, subtract, and report hectares to 4 dp.',
+   intro:['Diagonal by inverse: √(ΔE² + ΔN²)','Half-perimeter s = (a + b + c) ⁄ 2','Triangle by Heron: √[s(s−a)(s−b)(s−c)]','Lot A after = combined − triangle','Convert: 1 ha = 10,000 m²'],
+   credit:'Mirrors A7 Q2 — and the rung order follows Dr. Rajabi’s hint-sheet style: a numbered “compute in this order, check each result” chain.',
+   gen:genSubdivide, build:buildSubdivide, givens:givensSubdivide},
+ m8_curve:{module:'m8', title:'Curve Elements & Chainage', phase:'M8 · Phase A',
+   card:'From the tangent bearings, radius and PI chainage: Δ, the tangent length, chainage of the BC, curve length, chainage of the EC, and the long chord — the L7 example chain.',
+   intro:['Δ = forward − back tangent bearing','T = R·tan(Δ⁄2)','Chainage BC = chainage PI − T','L = 2πR(Δ⁄360)','Chainage EC = chainage BC + L','Long chord C = 2R·sin(Δ⁄2)'],
+   gen:genCurve, build:buildCurve, givens:givensCurve},
+ m8_defl:{module:'m8', title:'Deflection Angles & Chords', phase:'M8 · Phase B',
+   card:'Set out the first even station on a curve: find it, run the arc from the BC, turn the deflection angle, pull the chord — and check the EC deflection is Δ⁄2.',
+   intro:['First even station after the BC','Arc l = station − chainage of BC','Deflection δ = 90·l ⁄ (πR)','Chord = 2R·sin δ','Bearing = tangent bearing + δ (right curve)','Check: at the EC, δ = Δ⁄2'],
+   gen:genDefl, build:buildDefl, givens:givensDefl},
 };
 
 /* ---- Calculator keypress-cost model (PILOT — m2_reduce only) ----------------

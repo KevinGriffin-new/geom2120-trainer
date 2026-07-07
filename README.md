@@ -8,7 +8,7 @@ offline. Open it in any browser (or add it to your phone's home screen).
 
 ## What it covers
 
-Modules 1–6, each with concept questions and hands-on **Step Drills**:
+Modules 1–8, each with concept questions and hands-on **Step Drills**:
 
 - **Module 1 — Units & Conversions:** gons ↔ degrees ↔ radians, DMS, interior vs
   exterior angle sums, legal/metric units.
@@ -22,6 +22,10 @@ Modules 1–6, each with concept questions and hands-on **Step Drills**:
   bearing/distance of a line.
 - **Module 6 — Trigonometric Levelling:** short-line and reciprocal elevations, loop
   levelling closure, and long lines (curvature & refraction) with gradients.
+- **Module 7 — Area Calculations:** area units, simple figures, offsets from a baseline
+  (trapezoid & Simpson's rules), and area by coordinates (Sum & Difference method).
+- **Module 8 — Horizontal Curves:** simple circular curves — delta angle, tangent
+  length, curve length, BC/EC chainage, and deflection angles + chords for layout.
 
 ## How it teaches
 
